@@ -71,7 +71,7 @@ export default function GoogleLoginButton() {
       const handleGoogleCallback = async (code: string) => {
         try {
           const response = await axios.post<AuthResponse>(
-            `${process.env.NEXT_PUBLIC_AUTH_URL}/google/`,
+            `${process.env.NEXT_PUBLIC_API_URL}/auth/google/`,
             { code },
             { headers: { 'Content-Type': 'application/json' } }
           );
