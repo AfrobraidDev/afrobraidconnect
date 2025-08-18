@@ -71,7 +71,7 @@ export default function SitemapPage() {
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Discover Afro-Connect</h2>
           <p className="text-gray-600 mb-4">
             Our sitemap helps you navigate all the features and services we offer. 
-            Can't find what you're looking for?
+            Can&apos;t find what you&apos;re looking for?
           </p>
           <Link
             href="/contact"

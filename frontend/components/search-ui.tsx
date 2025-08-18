@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { FiClock, FiFilter, FiStar, FiX, FiMapPin, FiNavigation } from 'react-icons/fi';
 import Link from 'next/link';
+import Image from 'next/image';
 
 type Treatment = {
   id: string;
@@ -11,6 +12,10 @@ type Treatment = {
   afterImage: string;
   rating: number;
   distance?: number;
+};
+
+type Filters = {
+  [key: string]: string[];
 };
 
 export default function SearchUI() {
@@ -54,7 +59,7 @@ export default function SearchUI() {
     }
   ];
 
-  const filters = {
+  const filters: Filters = {
     "Price Range": ["$", "$$", "$$$", "$$$$"],
     "Rating": ["4+ Stars", "3+ Stars", "New Businesses"],
     "Distance": ["< 1km", "< 5km", "< 10km", "Anywhere"],
@@ -188,9 +193,11 @@ export default function SearchUI() {
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Before</p>
                   <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                    <img 
+                    <Image 
                       src={selectedTreatment.beforeImage} 
                       alt={`Before ${selectedTreatment.name}`}
+                      width={300}
+                      height={300}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -198,9 +205,11 @@ export default function SearchUI() {
                 <div>
                   <p className="text-sm text-gray-500 mb-1">After</p>
                   <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                    <img 
+                    <Image 
                       src={selectedTreatment.afterImage} 
                       alt={`After ${selectedTreatment.name}`}
+                      width={300}
+                      height={300}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -247,9 +256,11 @@ export default function SearchUI() {
                   onClick={() => setSelectedTreatment(treatment)}
                 >
                   <div className="aspect-video bg-gray-100 relative">
-                    <img 
+                    <Image 
                       src={treatment.afterImage} 
                       alt={treatment.name}
+                      width={400}
+                      height={300}
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute bottom-2 left-2 bg-white/90 px-2 py-1 rounded text-sm flex items-center gap-1">

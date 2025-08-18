@@ -1,15 +1,15 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import { FiSearch, FiMapPin, FiCalendar, FiClock } from 'react-icons/fi';
 
 export default function SearchCard() {
-  const [location, setLocation] = useState('Current location');
-  const [date, setDate] = useState('Any date');
-  const [time, setTime] = useState('Any time');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [location, setLocation] = useState<string>('Current location');
+  const [date, setDate] = useState<string>('Any date');
+  const [time, setTime] = useState<string>('Any time');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const handleSearch = (e: any) => {
+  const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     // Handle search logic here
     console.log({ searchQuery, location, date, time });
@@ -67,11 +67,11 @@ export default function SearchCard() {
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                   >
-                    <option>Current location</option>
-                    <option>New York</option>
-                    <option>London</option>
-                    <option>Paris</option>
-                    <option>Tokyo</option>
+                    <option value="Current location">Current location</option>
+                    <option value="New York">New York</option>
+                    <option value="London">London</option>
+                    <option value="Paris">Paris</option>
+                    <option value="Tokyo">Tokyo</option>
                   </select>
                 </div>
               </div>
@@ -90,11 +90,11 @@ export default function SearchCard() {
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                   >
-                    <option>Any date</option>
-                    <option>Today</option>
-                    <option>Tomorrow</option>
-                    <option>This weekend</option>
-                    <option>Next week</option>
+                    <option value="Any date">Any date</option>
+                    <option value="Today">Today</option>
+                    <option value="Tomorrow">Tomorrow</option>
+                    <option value="This weekend">This weekend</option>
+                    <option value="Next week">Next week</option>
                   </select>
                 </div>
               </div>
@@ -113,10 +113,10 @@ export default function SearchCard() {
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
                   >
-                    <option>Any time</option>
-                    <option>Morning</option>
-                    <option>Afternoon</option>
-                    <option>Evening</option>
+                    <option value="Any time">Any time</option>
+                    <option value="Morning">Morning</option>
+                    <option value="Afternoon">Afternoon</option>
+                    <option value="Evening">Evening</option>
                   </select>
                 </div>
               </div>

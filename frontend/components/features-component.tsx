@@ -6,24 +6,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
-import { Skeleton } from "@/components/ui/skeleton";
-
-export type Business = {
-  id: number | string;
-  slug: string;
-  name: string;
-  category: string;
-  location: string;
-  description?: string;
-  rating?: number;
-  hours?: string;
-  phone?: string;
-  website?: string;
-  image?: string | null;
-  gallery?: string[];
-  group? : string
-  // Add any other custom fields your app needs
-};
+import { Skeleton } from "@/components/ui/skeleton"
+import { Business } from '@/types'
 
 type FeaturedComponentProps = {
   businesses?: Business[];
@@ -110,7 +94,7 @@ export default function FeaturedComponent({
     if (onCardClick) {
       onCardClick(business);
     }
-  };
+  }
 
   if (isLoading) {
     return (

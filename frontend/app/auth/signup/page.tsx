@@ -1,4 +1,5 @@
 'use client';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import Link from "next/link";
@@ -9,10 +10,10 @@ import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from 'sonner';
 import BreathingDots from '@/components/breathing-effect';
 
-export default function SignupPage() {
+function SignupForm() {
   const searchParams = useSearchParams();
   const userType = searchParams.get('user_type') as 'customer' | 'braider' | null;
-  
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -26,7 +27,7 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!userType) {
       toast.error('Please select a user type first');
       return;
@@ -43,7 +44,7 @@ export default function SignupPage() {
     }
 
     setIsLoading(true);
-    
+
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL}/register/`, {
         method: 'POST',
@@ -67,11 +68,17 @@ export default function SignupPage() {
       }
 
       toast.success('Account created successfully!');
-      window.location.href = userType === 'customer' 
-        ? '/dashboard/customer' 
+      window.location.href = userType === 'customer'
+        ? '/dashboard/customer'
         : '/dashboard/braider';
-    } catch (error: any) {
-      toast.error(error.message || 'Registration failed');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        toast.error(String(error.message));
+      } else {
+        toast.error('Registration failed');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -108,9 +115,9 @@ export default function SignupPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First name</Label>
-                  <Input 
-                    id="firstName" 
-                    placeholder="John" 
+                  <Input
+                    id="firstName"
+                    placeholder="John"
                     required
                     value={formData.firstName}
                     onChange={handleChange}
@@ -118,9 +125,9 @@ export default function SignupPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last name</Label>
-                  <Input 
-                    id="lastName" 
-                    placeholder="Doe" 
+                  <Input
+                    id="lastName"
+                    placeholder="Doe"
                     required
                     value={formData.lastName}
                     onChange={handleChange}
@@ -130,10 +137,10 @@ export default function SignupPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
-                  placeholder="johnedoe@gmail.com" 
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="johnedoe@gmail.com"
                   required
                   value={formData.email}
                   onChange={handleChange}
@@ -185,13 +192,13 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-purple-500 hover:bg-purple-600 cursor-pointer"
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <BreathingDots/>
+                  <BreathingDots />
                 ) : (
                   'Create Account'
                 )}
@@ -211,14 +218,14 @@ export default function SignupPage() {
             </div>
 
             {/* Google Signup Button */}
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full gap-2 cursor-pointer"
               disabled={isLoading}
               onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_AUTH_URL}/google/`}
             >
               {isLoading ? (
-                <BreathingDots/>
+                <BreathingDots />
               ) : (
                 <>
                   <FaGoogle className="h-4 w-4 text-red-500" />
@@ -229,8 +236,8 @@ export default function SignupPage() {
 
             <div className="text-center text-sm">
               Already have an account?{" "}
-              <Link 
-                href="/auth/login" 
+              <Link
+                href="/auth/login"
                 className="text-purple-500 hover:underline cursor-pointer"
               >
                 Sign in
@@ -240,7 +247,7 @@ export default function SignupPage() {
         </div>
 
         {/* Right Column - Static Image */}
-        <div 
+        <div
           className="hidden md:block bg-cover bg-center"
           style={{
             backgroundImage: "url('/images/signup-hero.jpg')",
@@ -261,5 +268,21 @@ export default function SignupPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-0 bg-white dark:bg-gray-800">
+          <div className="p-10 md:pl-20 md:pr-20 md:py-16">
+            Loading signup form...
+          </div>
+        </div>
+      </div>
+    }>
+      <SignupForm />
+    </Suspense>
   );
 }

@@ -3,7 +3,11 @@
 import { useState, useRef } from 'react';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
-const countries = [
+interface CityServices {
+  [key: string]: string[];
+}
+
+const countries: string[] = [
   'Australia', 'Bahrain', 'Barbados', 'Belgium', 'Brazil', 
   'Canada', 'France', 'Germany', 'Greece', 'Ireland', 
   'Italy', 'Mexico', 'Netherlands', 'New Zealand', 'Poland', 
@@ -11,7 +15,7 @@ const countries = [
   'South Africa', 'Spain', 'United Arab Emirates', 'United Kingdom', 'United States'
 ];
 
-const cities = {
+const cities: CityServices = {
   Melbourne: [
     'Hair Salons', 'Nails', 'Eyebrows & Lashes', 'Beauty Salons',
     'Barbers', 'Massage Parlours', 'Spas & Saunas', 'Waxing Salons'
@@ -35,15 +39,14 @@ const cities = {
 };
 
 export default function BrowseByCity() {
-  const [selectedCountry, setSelectedCountry] = useState('Australia');
-  const [selectedCity, setSelectedCity] = useState('Melbourne');
-  const scrollRef = useRef(null);
+  const [selectedCountry, setSelectedCountry] = useState<string>('Australia');
+  const [selectedCity, setSelectedCity] = useState<string>('Melbourne');
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const scroll = (direction: any) => {
+  const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const { current } = scrollRef;
       const scrollAmount = direction === 'left' ? -200 : 200;
-      current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
@@ -57,6 +60,7 @@ export default function BrowseByCity() {
           <button 
             onClick={() => scroll('left')}
             className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition"
+            aria-label="Scroll left"
           >
             <FiChevronLeft className="text-purple-600 text-xl" />
           </button>
@@ -70,9 +74,11 @@ export default function BrowseByCity() {
             <button
               key={country}
               onClick={() => setSelectedCountry(country)}
-              className={`px-6 py-2 rounded-full whitespace-nowrap transition ${selectedCountry === country 
-                ? 'bg-purple-600 text-white' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              className={`px-6 py-2 rounded-full whitespace-nowrap transition ${
+                selectedCountry === country 
+                  ? 'bg-purple-600 text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
             >
               {country}
             </button>
@@ -83,6 +89,7 @@ export default function BrowseByCity() {
           <button 
             onClick={() => scroll('right')}
             className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition"
+            aria-label="Scroll right"
           >
             <FiChevronRight className="text-purple-600 text-xl" />
           </button>
@@ -95,9 +102,11 @@ export default function BrowseByCity() {
           <button
             key={city}
             onClick={() => setSelectedCity(city)}
-            className={`px-6 py-2 rounded-full whitespace-nowrap transition ${selectedCity === city 
-              ? 'bg-purple-600 text-white' 
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+            className={`px-6 py-2 rounded-full whitespace-nowrap transition ${
+              selectedCity === city 
+                ? 'bg-purple-600 text-white' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
           >
             {city}
           </button>
@@ -106,7 +115,7 @@ export default function BrowseByCity() {
 
       {/* Services Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {cities[selectedCity]?.map((service: any) => (
+        {cities[selectedCity]?.map((service) => (
           <a
             key={service}
             href="#"
