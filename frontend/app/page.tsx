@@ -1,9 +1,7 @@
 // app/page.tsx
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import FeaturedComponent from "@/components/features-component";
 import HeroSection from "@/components/Hero-Section";
+import CtaComponent from "@/components/cta-section";
 
 //  for demo purpopse
 const staticBusinesses = [
@@ -134,54 +132,45 @@ const staticBusinesses = [
     image: '/images/bookstore.jpg',
     group: 'Education',
   }
-];
+]
 
 // in production you'll wire the real/actual data from the api endpoint to display actual business data
 
-async function getFeaturedBusinesses() {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/businesses/featured/`, {
-      next: { revalidate: 60 } // Revalidate every 60 seconds -> more like a pollingand not web-socket yet
-    });
-    
-    if (!res.ok) throw new Error('Failed to fetch');
-    return await res.json();
-  } catch (error) {
-    console.error('Error fetching businesses:', error);
-    return null; // Will trigger fallback
-  }
-}
+// async function getFeaturedBusinesses() {
+//   try {
+//     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/businesses/featured/`, {
+//       next: { revalidate: 60 } // Revalidate every 60 seconds -> more like a pollingand not web-socket yet
+//     });
+
+//     if (!res.ok) throw new Error('Failed to fetch');
+//     return await res.json();
+//   } catch (error) {
+//     console.error('Error fetching businesses:', error);
+//     return null; // Will trigger fallback
+//   }
+// }
 
 export default async function Home() {
-  const api_data = await getFeaturedBusinesses()
+
   return (
 
     <main className="flex flex-col min-h-[calc(100vh-64px)]">
 
       {/* Hero Section */}
-      <HeroSection/>
+      <HeroSection />
       {/* end of Hero Section */}
 
       {/* Featured Businesses Section */}
-      <FeaturedComponent 
+      <FeaturedComponent
         businesses={staticBusinesses}
         title="Our Featured Businesses"
+        itemsPerView={5}
       />
       {/* end of Featured Business Section */}
 
 
       {/* CTA Section */}
-      <section className="py-16 px-[5rem] bg-purple-500 text-white">
-        <div className="container mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to grow your business?</h2>
-          <p className="text-purple-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of African entrepreneurs reaching new customers every day
-          </p>
-          <Button variant="secondary" size="lg" asChild>
-            <Link href="/for-business">Get Started Today</Link>
-          </Button>
-        </div>
-      </section>
+      <CtaComponent/>
     </main>
   );
 }
