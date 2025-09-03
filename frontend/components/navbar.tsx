@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu, Globe, Download, Briefcase, User, LogOut, Settings } from "lucide-react";
+import { Menu, Download, Briefcase, User, LogOut, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
