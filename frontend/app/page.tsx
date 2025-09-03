@@ -2,6 +2,7 @@
 import FeaturedComponent from "@/components/features-component";
 import HeroSection from "@/components/Hero-Section";
 import CtaComponent from "@/components/cta-section";
+import AppLayout from "@/components/app-layout";
 
 //  for demo purpopse
 const staticBusinesses = [
@@ -153,24 +154,25 @@ const staticBusinesses = [
 export default async function Home() {
 
   return (
+    <AppLayout>
+      <main className="flex flex-col min-h-[calc(100vh-64px)]">
 
-    <main className="flex flex-col min-h-[calc(100vh-64px)]">
+        {/* Hero Section */}
+        <HeroSection />
+        {/* end of Hero Section */}
 
-      {/* Hero Section */}
-      <HeroSection />
-      {/* end of Hero Section */}
-
-      {/* Featured Businesses Section */}
-      <FeaturedComponent
-        businesses={staticBusinesses}
-        title="Our Featured Businesses"
-        itemsPerView={5}
-      />
-      {/* end of Featured Business Section */}
+        {/* Featured Businesses Section */}
+        <FeaturedComponent
+          businesses={staticBusinesses}
+          title="Our Featured Businesses"
+          itemsPerView={5}
+        />
+        {/* end of Featured Business Section */}
 
 
-      {/* CTA Section */}
-      <CtaComponent/>
-    </main>
+        {/* CTA Section */}
+        <CtaComponent />
+      </main>
+    </AppLayout>
   );
 }
