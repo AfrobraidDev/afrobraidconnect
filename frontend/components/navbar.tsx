@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu, Globe, Download, Briefcase, User, LogOut, Settings } from "lucide-react"
+import { Menu, Globe, Download, Briefcase, User, LogOut, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -23,15 +23,27 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { LanguageSelector } from "./language-selector";
 
 export function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserData] = useState<{name?: string, email?: string, role?: string, avatar?: string}>({});
+  const [userData, setUserData] = useState<{ name?: string, email?: string, role?: string, avatar?: string }>({});
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Check screen size
   useEffect(() => {
@@ -43,8 +55,8 @@ export function Navbar() {
 
   // Check auth status and load user data
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? 
-      sessionStorage.getItem('access_token') || 
+    const token = typeof window !== 'undefined' ?
+      sessionStorage.getItem('access_token') ||
       document.cookie.split('; ')
         .find(row => row.startsWith('access_token='))
         ?.split('=')[1] : null;
@@ -81,15 +93,15 @@ export function Navbar() {
 
   const getRoleBasedLink = () => {
     if (!userData.role) return '/';
-    
+
     const currentDomain = window.location.hostname;
     const isLocalhost = currentDomain.includes('localhost');
     const baseDomain = isLocalhost ? 'localhost:3000' : currentDomain.split('.').slice(-2).join('.');
 
-    switch(userData.role.toLowerCase()) {
+    switch (userData.role.toLowerCase()) {
       case 'admin':
-        return isLocalhost 
-          ? `http://admin.localhost:3000` 
+        return isLocalhost
+          ? `http://admin.localhost:3000`
           : `https://admin.${baseDomain}`;
       case 'braider':
         return isLocalhost
@@ -106,7 +118,7 @@ export function Navbar() {
 
   // Mobile menu component
   const MobileMenu = () => (
-    <div className="fixed inset-0 z-50 bg-background overflow-y-auto" style={{ height: '100dvh' }}>
+    <div className="fixed inset-0 z-50 bg-[#FAF3EF] overflow-y-auto" style={{ height: '100dvh' }}>
       <div className="flex justify-between items-center p-6">
         <Link href="/" onClick={() => setIsMenuOpen(false)}>
           <Image
@@ -117,9 +129,9 @@ export function Navbar() {
             className="object-contain"
           />
         </Link>
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => setIsMenuOpen(false)}
           className="h-10 w-10"
         >
@@ -133,7 +145,7 @@ export function Navbar() {
             <div className="flex items-center gap-4 my-6 p-4 bg-muted rounded-lg">
               <Avatar className="h-12 w-12">
                 <AvatarImage src={userData.avatar} />
-                <AvatarFallback className="bg-purple-500 text-white">
+                <AvatarFallback className="bg-[#D0865A] text-white">
                   {userData.name?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
@@ -144,8 +156,8 @@ export function Navbar() {
             </div>
 
             <nav className="space-y-2">
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className="w-full justify-start h-14 text-base cursor-pointer"
                 onClick={() => {
                   window.location.href = getRoleBasedLink();
@@ -156,8 +168,8 @@ export function Navbar() {
                 Profile
               </Button>
 
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className="w-full justify-start h-14 text-base cursor-pointer"
                 asChild
               >
@@ -170,7 +182,7 @@ export function Navbar() {
           </>
         ) : (
           <div className="space-y-4 my-6">
-            <Button className="w-full h-14 bg-purple-500 hover:bg-purple-600 text-white cursor-pointer" asChild>
+            <Button className="w-full h-14 bg-[#D0865A] hover:bg-[#BF764A] text-white cursor-pointer" asChild>
               <Link href="/auth" onClick={() => setIsMenuOpen(false)}>
                 Sign Up Now
               </Link>
@@ -185,8 +197,8 @@ export function Navbar() {
 
         <div className="border-t my-6 pt-6">
           <nav className="space-y-2">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="w-full justify-start h-14 text-base cursor-pointer"
               asChild
             >
@@ -196,15 +208,12 @@ export function Navbar() {
               </Link>
             </Button>
 
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="w-full justify-start h-14 text-base cursor-pointer"
               asChild
             >
-              <Link href="/language" onClick={() => setIsMenuOpen(false)}>
-                <Globe className="mr-3 h-5 w-5" />
-                English (Global)
-              </Link>
+              <LanguageSelector />
             </Button>
           </nav>
         </div>
@@ -213,10 +222,10 @@ export function Navbar() {
           <h3 className="text-sm font-medium text-muted-foreground mb-4">
             {isLoggedIn ? 'Account' : 'Business'}
           </h3>
-          
+
           {isLoggedIn ? (
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="w-full justify-start h-14 text-base text-red-500 hover:text-red-600 cursor-pointer"
               onClick={() => setShowLogoutConfirm(true)}
             >
@@ -224,8 +233,8 @@ export function Navbar() {
               Log Out
             </Button>
           ) : (
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="w-full justify-start h-14 text-base cursor-pointer"
               asChild
             >
@@ -241,7 +250,10 @@ export function Navbar() {
   );
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 sm:px-6 lg:px-60">
+    <header className={`sticky top-0 z-50 w-full backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 sm:px-6 lg:px-60 transition-all duration-300 ${isScrolled
+      ? 'border-b'
+      : 'border-b-0'
+      } ${isScrolled ? 'bg-transparent' : 'bg-custom-cream'}`}>
       <div className="flex h-16 items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">
@@ -259,11 +271,13 @@ export function Navbar() {
         <div className="flex items-center gap-2 sm:gap-4">
           {/* Login button comes first when not logged in */}
           {!isLoggedIn && (
-            <Button variant="ghost" asChild className="hidden sm:flex cursor-pointer">
-              <Link
-                href="/auth/login"
-                className="text-purple-500 hover:text-purple-600 dark:text-purple-400 dark:hover:text-purple-300"
-              >
+            <Button
+              variant="outline"
+              asChild
+              className="hidden sm:flex cursor-pointer rounded-full text-black hover:bg-[#D0865A] hover:text-white transition-all ease-in-out"
+              style={{ transitionDuration: '400ms' }}
+            >
+              <Link href="/auth/login">
                 Log in
               </Link>
             </Button>
@@ -273,30 +287,30 @@ export function Navbar() {
           {isLoggedIn && (
             <Avatar className="h-8 w-8 cursor-pointer hidden sm:flex" onClick={() => window.location.href = getRoleBasedLink()}>
               <AvatarImage src={userData.avatar} />
-              <AvatarFallback className="bg-purple-500 text-white">
+              <AvatarFallback className="bg-[#D0865A] text-white">
                 {userData.name?.charAt(0).toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
           )}
 
           {/* Then List Your Business button */}
-          <Button variant="outline" size="sm" asChild className="hidden sm:flex cursor-pointer">
+          <Button variant="outline" size="sm" asChild className="hidden sm:flex cursor-pointer rounded-full text-black transition-all ease-in-out">
             <Link href="/for-business">
-              List Your Business
+              Join as a Braider
             </Link>
           </Button>
 
           {/* Menu Trigger */}
           {isMobile ? (
             <>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setIsMenuOpen(true)}
                 className="flex gap-1 cursor-pointer"
               >
+                <span className="sr-only sm:not-sr-only">Navigation</span>
                 <Menu className="h-4 w-4" />
-                <span className="sr-only sm:not-sr-only">Menu</span>
               </Button>
               {isMenuOpen && <MobileMenu />}
             </>
@@ -306,22 +320,22 @@ export function Navbar() {
               {isLoggedIn && (
                 <Avatar className="h-8 w-8 cursor-pointer sm:hidden" onClick={() => window.location.href = getRoleBasedLink()}>
                   <AvatarImage src={userData.avatar} />
-                  <AvatarFallback className="bg-purple-500 text-white">
+                  <AvatarFallback className="bg-[#D0865A] text-white">
                     {userData.name?.charAt(0).toUpperCase() || 'U'}
                   </AvatarFallback>
                 </Avatar>
               )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="flex gap-1 cursor-pointer">
+                  <Button variant="outline" size="sm" className="flex gap-1 cursor-pointer rounded-full">
+                    <span className="sr-only sm:not-sr-only">Navigation</span>
                     <Menu className="h-4 w-4" />
-                    <span className="sr-only sm:not-sr-only">Menu</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   {isLoggedIn ? (
                     <>
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         onClick={() => window.location.href = getRoleBasedLink()}
                         className="cursor-pointer"
                       >
@@ -341,17 +355,10 @@ export function Navbar() {
                           <span>Download App</span>
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/language" className="cursor-pointer">
-                          <Globe className="mr-2 h-4 w-4" />
-                          <span>English (Global)</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
                       <div className="relative px-2 py-1.5 text-xs text-muted-foreground">
                         Account
                       </div>
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         onClick={() => setShowLogoutConfirm(true)}
                         className="text-red-500 focus:text-red-500 cursor-pointer"
                       >
@@ -362,7 +369,7 @@ export function Navbar() {
                   ) : (
                     <>
                       <DropdownMenuItem asChild>
-                        <Link href="/auth" className="cursor-pointer text-purple-500 hover:text-purple-600">
+                        <Link href="/auth" className="cursor-pointer text-[#D0865A] hover:text-[#BF764A]">
                           <User className="mr-2 h-4 w-4" />
                           <span>Sign up now</span>
                         </Link>
@@ -374,13 +381,8 @@ export function Navbar() {
                           <span>Download App</span>
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/language" className="cursor-pointer">
-                          <Globe className="mr-2 h-4 w-4" />
-                          <span>English (Global)</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
+
+
                       <div className="relative px-2 py-1.5 text-xs text-muted-foreground">
                         Business
                       </div>
@@ -396,6 +398,9 @@ export function Navbar() {
               </DropdownMenu>
             </div>
           )}
+          <div className="hidden lg:block">
+            <LanguageSelector />
+          </div>
         </div>
       </div>
 
@@ -410,7 +415,7 @@ export function Navbar() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               className="bg-red-500 hover:bg-red-600 cursor-pointer"
               onClick={handleLogout}
             >
