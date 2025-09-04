@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Image from "next/image";
 import { useState } from "react";
 import axios from "axios";
-import { toast } from 'sonner'
+import { toast } from "sonner";
 import GoogleLoginButton from "@/components/google-auth";
 
 export default function LoginPage() {
@@ -17,7 +17,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,22 +34,22 @@ export default function LoginPage() {
         credentials,
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
 
       const { access_token, refresh_token, role } = response.data;
 
-      if (typeof window !== 'undefined') {
-        // 1. Session Storage (Client-side immediate use)
-        sessionStorage.setItem('access_token', access_token);
-        sessionStorage.setItem('user_role', role);
+      if (typeof window !== "undefined") {
+        // 1. Session Storage (Client-side immediate use).
+        sessionStorage.setItem("access_token", access_token);
+        sessionStorage.setItem("user_role", role);
 
         // 2. Cookies (Cross-subdomain access)
-        const domain = window.location.hostname.includes('localhost')
-          ? 'localhost'
-          : `.${window.location.hostname.split('.').slice(-2).join('.')}`;
+        const domain = window.location.hostname.includes("localhost")
+          ? "localhost"
+          : `.${window.location.hostname.split(".").slice(-2).join(".")}`;
 
         // Secure cookie settings
         const cookieSettings = [
@@ -58,36 +57,43 @@ export default function LoginPage() {
           `Domain=${domain}`,
           `SameSite=Lax`,
           `Secure`,
-          `Max-Age=${60 * 60}` // 1 hour
-        ].join('; ');
+          `Max-Age=${60 * 60}`, // 1 hour
+        ].join("; ");
 
         document.cookie = `access_token=${access_token}; ${cookieSettings}`;
-        document.cookie = `refresh_token=${refresh_token}; ${cookieSettings.replace('SameSite=Lax', 'SameSite=Strict; HttpOnly')}`;
+        document.cookie = `refresh_token=${refresh_token}; ${cookieSettings.replace(
+          "SameSite=Lax",
+          "SameSite=Strict; HttpOnly"
+        )}`;
         document.cookie = `user_role=${role}; ${cookieSettings}`;
 
         // 3. Set default auth header
-        axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+        axios.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${access_token}`;
 
         // 4. Role-based redirection
         const getRedirectUrl = () => {
-          const isLocalhost = window.location.hostname.includes('localhost');
-          const baseDomain = isLocalhost ? 'localhost:3000' : window.location.hostname.split('.').slice(-2).join('.');
+          const isLocalhost = window.location.hostname.includes("localhost");
+          const baseDomain = isLocalhost
+            ? "localhost:3000"
+            : window.location.hostname.split(".").slice(-2).join(".");
 
           switch (role.toLowerCase()) {
-            case 'admin':
+            case "admin":
               return isLocalhost
                 ? `http://admin.localhost:3000/dashboard`
                 : `https://admin.${baseDomain}/dashboard`;
-            case 'braider':
+            case "braider":
               return isLocalhost
                 ? `http://braider.localhost:3000/dashboard`
                 : `https://braider.${baseDomain}/dashboard`;
-            case 'customer':
+            case "customer":
               return isLocalhost
                 ? `http://localhost:3000/dashboard/customer`
                 : `https://${baseDomain}/dashboard/customer`;
             default:
-              throw new Error('Invalid user role');
+              throw new Error("Invalid user role");
           }
         };
 
@@ -97,42 +103,44 @@ export default function LoginPage() {
           window.location.href = getRedirectUrl();
         }, 1500);
       }
-
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const status = error.response?.status;
-        const message = error.response?.data?.message ||
+        const message =
+          error.response?.data?.message ||
           error.response?.data?.detail ||
-          'An unexpected error occurred';
+          "An unexpected error occurred";
 
         switch (status) {
           case 400:
-            toast.error('Invalid request format');
+            toast.error("Invalid request format");
             break;
           case 401:
-            toast.error(message.includes('password')
-              ? 'Invalid password'
-              : 'Account not found');
+            toast.error(
+              message.includes("password")
+                ? "Invalid password"
+                : "Account not found"
+            );
             break;
           case 403:
-            toast.error('Your account is not authorized');
+            toast.error("Your account is not authorized");
             break;
           case 404:
-            toast.error('No account linked to this email');
+            toast.error("No account linked to this email");
             break;
           case 500:
-            toast.error('Our servers are busy. Please try later');
+            toast.error("Our servers are busy. Please try later");
             break;
           default:
             toast.error(message);
         }
       } else {
-        toast.error('Network connection failed');
+        toast.error("Network connection failed");
       }
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
@@ -236,10 +244,7 @@ export default function LoginPage() {
 
             <div className="text-center text-sm">
               Don&apos;t have an account?{" "}
-              <Link
-                href="/auth"
-                className="text-purple-500 hover:underline"
-              >
+              <Link href="/auth" className="text-purple-500 hover:underline">
                 Sign up
               </Link>
             </div>
@@ -282,7 +287,7 @@ export default function LoginPage() {
         }
         .dot-flashing::before,
         .dot-flashing::after {
-          content: '';
+          content: "";
           display: inline-block;
           position: absolute;
           top: 0;
