@@ -122,7 +122,7 @@ export function Navbar() {
       <div className="flex justify-between items-center p-6">
         <Link href="/" onClick={() => setIsMenuOpen(false)}>
           <Image
-            src="/images/afro-connect.png"
+            src="/images/afro-logo2.png"
             alt="AfroConnect Logo"
             width={180}
             height={40}
@@ -258,7 +258,7 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <Image
-            src="/images/afro-connect.png"
+            src="/images/afro-logo2.png"
             alt="AfroConnect Logo"
             width={180}
             height={40}
