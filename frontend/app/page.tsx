@@ -1,176 +1,170 @@
-// app/page.tsx
-import FeaturedComponent from "@/components/features-component";
 import HeroSection from "@/components/Hero-Section";
 import CtaComponent from "@/components/cta-section";
 import AppLayout from "@/components/app-layout";
-
-//  for demo purpopse
-const staticBusinesses = [
-  {
-    id: 1,
-    slug: 'afro-chic-fashion',
-    name: 'Afro Chic Fashion',
-    category: 'Clothing Store',
-    location: '123 Cultural Ave, Lagos',
-    description: 'Authentic African fashion and accessories for modern tastes. We specialize in handmade garments using traditional fabrics with contemporary designs.',
-    rating: 4.7,
-    hours: 'Mon-Sat: 9AM-8PM, Sun: 11AM-6PM',
-    phone: '+2348012345678',
-    website: 'https://afrochic.example.com',
-    image: '/images/fashion-store.jpg',
-    gallery: [
-      '/images/fashion-1.jpg',
-      '/images/fashion-2.jpg',
-      '/images/fashion-3.jpg'
-    ],
-    group: 'Fashion',
-  },
-  {
-    id: 2,
-    slug: 'jollof-kingdom',
-    name: 'Jollof Kingdom',
-    category: 'Restaurant',
-    location: '45 Flavor Street, Accra',
-    description: 'Home of the legendary West African jollof rice. Experience the authentic taste of Ghana with our signature dishes and warm hospitality.',
-    rating: 4.9,
-    hours: 'Daily: 8AM-10PM',
-    phone: '+233201234567',
-    website: 'https://jollofkingdom.example.com',
-    image: '/images/jollof-restaurant.jpg',
-    gallery: [
-      '/images/jollof-1.jpg',
-      '/images/jollof-2.jpg'
-    ],
-    group: 'Food',
-  },
-  {
-    id: 3,
-    slug: 'diaspora-tours',
-    name: 'Diaspora Tours',
-    category: 'Travel Agency',
-    location: '78 Heritage Road, Nairobi',
-    description: 'Cultural heritage tours across Africa. Rediscover your roots with our curated experiences from Cape to Cairo.',
-    rating: 4.5,
-    hours: 'Mon-Fri: 9AM-5PM, Sat: 10AM-3PM',
-    phone: '+254712345678',
-    website: 'https://diasporatours.example.com',
-    image: '/images/travel-agency.jpg',
-    group: 'Travel',
-  },
-  {
-    id: 4,
-    slug: 'naija-tech-hub',
-    name: 'Naija Tech Hub',
-    category: 'Co-working Space',
-    location: '22 Innovation Way, Abuja',
-    description: 'Premier tech hub fostering innovation and entrepreneurship in Nigeria. We provide workspace, mentorship, and funding opportunities.',
-    rating: 4.8,
-    hours: 'Mon-Fri: 8AM-8PM, Sat: 10AM-4PM',
-    phone: '+2348098765432',
-    website: 'https://naijatechhub.example.com',
-    image: '/images/tech-hub.jpg',
-    gallery: [
-      '/images/hub-1.jpg',
-      '/images/hub-2.jpg',
-      '/images/hub-3.jpg'
-    ],
-    group: 'Technology',
-  },
-  {
-    id: 5,
-    slug: 'yoruba-beats',
-    name: 'Yoruba Beats',
-    category: 'Music Studio',
-    location: '15 Rhythm Lane, Ibadan',
-    description: 'Recording studio specializing in Afrobeat and traditional Yoruba music production. Equipped with state-of-the-art technology.',
-    rating: 4.3,
-    hours: 'By appointment',
-    phone: '+2348023456789',
-    image: '/images/music-studio.jpg',
-    group: 'Entertainment',
-  },
-  {
-    id: 6,
-    slug: 'swahili-spa',
-    name: 'Swahili Spa',
-    category: 'Wellness Center',
-    location: '30 Relaxation Blvd, Dar es Salaam',
-    description: 'Traditional African spa treatments using natural ingredients and ancient techniques for modern wellness.',
-    rating: 4.6,
-    hours: 'Daily: 10AM-8PM',
-    phone: '+255712345678',
-    website: 'https://swahilispa.example.com',
-    image: '/images/spa.jpg',
-    group: 'Wellness',
-  },
-  {
-    id: 7,
-    slug: 'kente-weavers',
-    name: 'Kente Weavers',
-    category: 'Artisan Collective',
-    location: '5 Craft Circle, Kumasi',
-    description: 'Preserving the ancient art of Kente weaving. Our collective showcases the finest handmade Ghanaian textiles.',
-    rating: 4.4,
-    hours: 'Mon-Sat: 9AM-5PM',
-    website: 'https://kenteweavers.example.com',
-    image: '/images/kente.jpg',
-    gallery: [
-      '/images/kente-1.jpg',
-      '/images/kente-2.jpg'
-    ],
-    group: 'Artisan',
-  },
-  {
-    id: 8,
-    slug: 'sankofa-books',
-    name: 'Sankofa Books',
-    category: 'Bookstore',
-    location: '12 Knowledge Street, Cape Town',
-    description: 'Specialist bookstore focusing on African literature, history, and academic works. Community space for book lovers.',
-    rating: 4.7,
-    hours: 'Mon-Sat: 9AM-6PM',
-    phone: '+27211234567',
-    image: '/images/bookstore.jpg',
-    group: 'Education',
-  }
-]
-
-// in production you'll wire the real/actual data from the api endpoint to display actual business data
-
-// async function getFeaturedBusinesses() {
-//   try {
-//     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/businesses/featured/`, {
-//       next: { revalidate: 60 } // Revalidate every 60 seconds -> more like a pollingand not web-socket yet
-//     });
-
-//     if (!res.ok) throw new Error('Failed to fetch');
-//     return await res.json();
-//   } catch (error) {
-//     console.error('Error fetching businesses:', error);
-//     return null; // Will trigger fallback
-//   }
-// }
+import ServiceCarousel from "@/components/service-carousel";
 
 export default async function Home() {
+  const recommended = [
+    {
+      image: "/images/person6.jpg",
+      title: "Braids by Myra",
+      rating: 5.0,
+      reviews: 621,
+      location: "Sonnenallee 120, 12045 Berlin",
+      services: [
+        "Box Braids", "Corn Rows", "Rope Braids", "Crown Braids",
+        "Dutch Braids", "Knotless Braids", "Faux Locs",
+      ],
+    },
+    {
+      image: "/images/person12.jpg",
+      title: "Protective Styles by Nana",
+      rating: 4.9,
+      reviews: 510,
+      location: "Leipziger Str. 44, 60487 Frankfurt",
+      services: ["Box Braids", "Corn Rows", "Rope Braids", "Crown Braids", "Dutch Braids"],
+    },
+    {
+      image: "/images/person13.jpg",
+      title: "Afro Hair Deluxe",
+      rating: 4.7,
+      reviews: 410,
+      location: "Alexanderplatz 12, 10178 Berlin",
+      services: ["Twists", "Faux Locs", "Corn Rows", "Dreadlocks"],
+    },
+    {
+      image: "/images/person19.jpg",
+      title: "Locs by Ama",
+      rating: 4.8,
+      reviews: 360,
+      location: "Hauptstr. 55, 50667 Köln",
+      services: ["Dreadlocks", "Sisterlocks", "Twists"],
+    },
+    {
+      image: "/images/person2.png",
+      title: "Natural Glow Hair Studio",
+      rating: 5.0,
+      reviews: 299,
+      location: "Maximilianstr. 99, 80539 München",
+      services: ["Corn Rows", "Braids", "Protective Styles"],
+    },
+  ];
+
+  const trending = [
+    {
+      image: "/images/person11.jpg",
+      title: "Braids by Myra",
+      rating: 5.0,
+      reviews: 621,
+      location: "Sonnenallee 120, 12045 Berlin",
+      services: [
+        "Box Braids", "Corn Rows", "Rope Braids", "Crown Braids",
+        "Dutch Braids", "Knotless Braids", "Faux Locs",
+      ],
+    },
+    {
+      image: "/images/person18.jpg",
+      title: "Protective Styles by Nana",
+      rating: 4.9,
+      reviews: 510,
+      location: "Leipziger Str. 44, 60487 Frankfurt",
+      services: ["Box Braids", "Corn Rows", "Rope Braids", "Crown Braids", "Dutch Braids"],
+    },
+    {
+      image: "/images/person14.png",
+      title: "Afro Hair Deluxe",
+      rating: 4.7,
+      reviews: 410,
+      location: "Alexanderplatz 12, 10178 Berlin",
+      services: ["Twists", "Faux Locs", "Corn Rows", "Dreadlocks"],
+    },
+    {
+      image: "/images/person9.jpg",
+      title: "Locs by Ama",
+      rating: 4.8,
+      reviews: 360,
+      location: "Hauptstr. 55, 50667 Köln",
+      services: ["Dreadlocks", "Sisterlocks", "Twists"],
+    },
+    {
+      image: "/images/person1.png",
+      title: "Natural Glow Hair Studio",
+      rating: 5.0,
+      reviews: 299,
+      location: "Maximilianstr. 99, 80539 München",
+      services: ["Corn Rows", "Braids", "Protective Styles"],
+    },
+  ];
+
+  const newToAfroBraid = [
+    {
+      image: "/images/person10.jpg",
+      title: "Braids by Myra",
+      rating: 5.0,
+      reviews: 621,
+      location: "Sonnenallee 120, 12045 Berlin",
+      services: [
+        "Box Braids", "Corn Rows", "Rope Braids", "Crown Braids",
+        "Dutch Braids", "Knotless Braids", "Faux Locs",
+      ],
+    },
+    {
+      image: "/images/person8.jpg",
+      title: "Protective Styles by Nana",
+      rating: 4.9,
+      reviews: 510,
+      location: "Leipziger Str. 44, 60487 Frankfurt",
+      services: ["Box Braids", "Corn Rows", "Rope Braids", "Crown Braids", "Dutch Braids"],
+    },
+    {
+      image: "/images/person15.jpg",
+      title: "Afro Hair Deluxe",
+      rating: 4.7,
+      reviews: 410,
+      location: "Alexanderplatz 12, 10178 Berlin",
+      services: ["Twists", "Faux Locs", "Corn Rows", "Dreadlocks"],
+    },
+    {
+      image: "/images/person17.png",
+      title: "Locs by Ama",
+      rating: 4.8,
+      reviews: 360,
+      location: "Hauptstr. 55, 50667 Köln",
+      services: ["Dreadlocks", "Sisterlocks", "Twists"],
+    },
+    {
+      image: "/images/person16.jpg",
+      title: "Natural Glow Hair Studio",
+      rating: 5.0,
+      reviews: 299,
+      location: "Maximilianstr. 99, 80539 München",
+      services: ["Corn Rows", "Braids", "Protective Styles"],
+    },
+  ];
 
   return (
     <AppLayout>
       <main className="flex flex-col min-h-[calc(100vh-64px)]">
-
-        {/* Hero Section */}
         <HeroSection />
-        {/* end of Hero Section */}
 
-        {/* Featured Businesses Section */}
-        <FeaturedComponent
-          businesses={staticBusinesses}
-          title="Our Featured Businesses"
-          itemsPerView={5}
-        />
-        {/* end of Featured Business Section */}
+        {/* recommended */}
+        <section className="mt-12 mb-20 ml-10 mr-20 lg:ml-20 lg:mr-20">
+          <h2 className="text-4xl font-bold mb-6 mx-[20px]">Recommended</h2>
+          <ServiceCarousel services={recommended} />
+        </section>
 
+        {/* trending */}
+        <section className="mt-12 mb-20 ml-10 mr-20 lg:ml-20 lg:mr-20">
+          <h2 className="text-4xl font-bold mb-6 mx-[20px]">Trending</h2>
+          <ServiceCarousel services={trending} />
+        </section>
 
-        {/* CTA Section */}
+        {/* newToAfroBraid */}
+        <section className="mt-12 mb-20 ml-10 mr-20 lg:ml-20 lg:mr-20">
+          <h2 className="text-4xl font-bold mb-6 mx-[20px]">New to AfroBraids</h2>
+          <ServiceCarousel services={newToAfroBraid} />
+        </section>
+
         <CtaComponent />
       </main>
     </AppLayout>
