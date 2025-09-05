@@ -1,3 +1,4 @@
+import HeroComponent from "./hero-component";
 import { SearchBar } from "./search-bar";
 
 export default function HeroSection() {
@@ -22,6 +23,9 @@ export default function HeroSection() {
                         <SearchBar />
                     </div>
                 </div>
+            </div>
+            <div className="w-full mt-8">
+                <HeroComponent />
             </div>
         </section>
     )
