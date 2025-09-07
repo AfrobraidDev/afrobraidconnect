@@ -209,8 +209,8 @@ const CustomDatePicker = ({
 
       {/* Mobile full-screen modal */}
       {isMobile && isMobileOpen && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-start justify-center p-4 pt-20">
-          <div className="w-full h-full max-w-md bg-white rounded-xl p-6 overflow-auto relative shadow-lg">
+        <div className="fixed inset-0 bg-black/40 z-1000 flex items-start justify-center p-4 pt-20">
+          <div className="w-full h-full max-w-md bg-white rounded-xl p-6 overflow-auto relative shadow-lg scale-90">
             {/* Close button */}
             <button
               onClick={() => setIsMobileOpen?.(false)}

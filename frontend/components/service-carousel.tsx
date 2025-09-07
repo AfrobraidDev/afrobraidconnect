@@ -37,7 +37,7 @@ export default function ServiceCarousel({ services }: ServiceCarouselProps) {
         <button
           onClick={() => scroll("left")}
           aria-label="Scroll left"
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-5 
                      bg-white shadow-md rounded-full p-2 hover:bg-gray-100 w-14 h-14 flex items-center justify-center -ml-4 cursor-pointer"
         >
           <FaArrowLeft className="w-6 h-6" />
@@ -54,7 +54,7 @@ export default function ServiceCarousel({ services }: ServiceCarouselProps) {
             key={i}
             className="
               shrink-0 grow-0 snap-start
-              basis-full md:basis-1/2 lg:basis-1/4   /* 👈 1 / 2 / 4 per view */
+              basis-full md:basis-1/2 lg:basis-1/4   /* 1 / 2 / 4 per view */
               px-2
             "
           >
@@ -68,7 +68,7 @@ export default function ServiceCarousel({ services }: ServiceCarouselProps) {
         <button
           onClick={() => scroll("right")}
           aria-label="Scroll right"
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-5 
                      bg-white shadow-md rounded-full p-2 hover:bg-gray-100 w-14 h-14 flex items-center justify-center -mr-4 cursor-pointer"
         >
           <FaArrowRight className="w-6 h-6" />
