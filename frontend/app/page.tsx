@@ -1,9 +1,19 @@
+"use client";
+
 import HeroSection from "@/components/Hero-Section";
-import CtaComponent from "@/components/cta-section";
 import AppLayout from "@/components/app-layout";
 import ServiceCarousel from "@/components/service-carousel";
+import ServiceCard from "@/components/service-card";
+import { useRecentlyViewed } from "./context/RecentlyViewedContext";
+import HowItWorksSection from '@/components/how-it-works'
+import GrowYourBusinessSection from "@/components/grow-business";
+import HeroDownSection from "@/components/hero-down-section";
+import ReviewsSection from "@/components/reviews-section";
+import FAQsSection from "@/components/faq-section";
 
-export default async function Home() {
+export default function Home() {
+  const { recentlyViewed } = useRecentlyViewed();
+
   const recommended = [
     {
       image: "/images/person6.jpg",
@@ -12,8 +22,13 @@ export default async function Home() {
       reviews: 621,
       location: "Sonnenallee 120, 12045 Berlin",
       services: [
-        "Box Braids", "Corn Rows", "Rope Braids", "Crown Braids",
-        "Dutch Braids", "Knotless Braids", "Faux Locs",
+        "Box Braids",
+        "Corn Rows",
+        "Rope Braids",
+        "Crown Braids",
+        "Dutch Braids",
+        "Knotless Braids",
+        "Faux Locs",
       ],
     },
     {
@@ -22,7 +37,13 @@ export default async function Home() {
       rating: 4.9,
       reviews: 510,
       location: "Leipziger Str. 44, 60487 Frankfurt",
-      services: ["Box Braids", "Corn Rows", "Rope Braids", "Crown Braids", "Dutch Braids"],
+      services: [
+        "Box Braids",
+        "Corn Rows",
+        "Rope Braids",
+        "Crown Braids",
+        "Dutch Braids",
+      ],
     },
     {
       image: "/images/person13.jpg",
@@ -58,8 +79,13 @@ export default async function Home() {
       reviews: 621,
       location: "Sonnenallee 120, 12045 Berlin",
       services: [
-        "Box Braids", "Corn Rows", "Rope Braids", "Crown Braids",
-        "Dutch Braids", "Knotless Braids", "Faux Locs",
+        "Box Braids",
+        "Corn Rows",
+        "Rope Braids",
+        "Crown Braids",
+        "Dutch Braids",
+        "Knotless Braids",
+        "Faux Locs",
       ],
     },
     {
@@ -68,7 +94,13 @@ export default async function Home() {
       rating: 4.9,
       reviews: 510,
       location: "Leipziger Str. 44, 60487 Frankfurt",
-      services: ["Box Braids", "Corn Rows", "Rope Braids", "Crown Braids", "Dutch Braids"],
+      services: [
+        "Box Braids",
+        "Corn Rows",
+        "Rope Braids",
+        "Crown Braids",
+        "Dutch Braids",
+      ],
     },
     {
       image: "/images/person14.png",
@@ -104,8 +136,13 @@ export default async function Home() {
       reviews: 621,
       location: "Sonnenallee 120, 12045 Berlin",
       services: [
-        "Box Braids", "Corn Rows", "Rope Braids", "Crown Braids",
-        "Dutch Braids", "Knotless Braids", "Faux Locs",
+        "Box Braids",
+        "Corn Rows",
+        "Rope Braids",
+        "Crown Braids",
+        "Dutch Braids",
+        "Knotless Braids",
+        "Faux Locs",
       ],
     },
     {
@@ -114,7 +151,13 @@ export default async function Home() {
       rating: 4.9,
       reviews: 510,
       location: "Leipziger Str. 44, 60487 Frankfurt",
-      services: ["Box Braids", "Corn Rows", "Rope Braids", "Crown Braids", "Dutch Braids"],
+      services: [
+        "Box Braids",
+        "Corn Rows",
+        "Rope Braids",
+        "Crown Braids",
+        "Dutch Braids",
+      ],
     },
     {
       image: "/images/person15.jpg",
@@ -147,25 +190,51 @@ export default async function Home() {
       <main className="flex flex-col min-h-[calc(100vh-64px)]">
         <HeroSection />
 
+        {/* recently viewed */}
+        {recentlyViewed.length > 0 && (
+          <section className="mt-12 mb-20 ml-5 mr-10 lg:ml-20 lg:mr-20">
+            <h2 className="text-4xl font-bold mb-6 mx-[20px]">Recently Viewed</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {recentlyViewed.map((service, idx) => (
+                <ServiceCard key={idx} {...service} />
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* recommended */}
-        <section className="mt-12 mb-20 ml-10 mr-20 lg:ml-20 lg:mr-20">
+        <section className="mt-12 mb-20 ml-5 mr-10 lg:ml-20 lg:mr-20">
           <h2 className="text-4xl font-bold mb-6 mx-[20px]">Recommended</h2>
           <ServiceCarousel services={recommended} />
         </section>
 
         {/* trending */}
-        <section className="mt-12 mb-20 ml-10 mr-20 lg:ml-20 lg:mr-20">
+        <section className="mt-12 mb-20 ml-5 mr-10 lg:ml-20 lg:mr-20">
           <h2 className="text-4xl font-bold mb-6 mx-[20px]">Trending</h2>
           <ServiceCarousel services={trending} />
         </section>
 
         {/* newToAfroBraid */}
-        <section className="mt-12 mb-20 ml-10 mr-20 lg:ml-20 lg:mr-20">
+        <section className="mt-12 mb-20 ml-5 mr-10 lg:ml-20 lg:mr-20">
           <h2 className="text-4xl font-bold mb-6 mx-[20px]">New to AfroBraids</h2>
           <ServiceCarousel services={newToAfroBraid} />
         </section>
 
-        <CtaComponent />
+        {/* how it works section */}
+        <HowItWorksSection />
+
+        {/* grow your business section */}
+        <GrowYourBusinessSection />
+
+        {/* Reviews section */}
+        <ReviewsSection />
+
+        {/* faqs section */}
+        <FAQsSection/>
+
+        {/* Hero down section */}
+        <HeroDownSection />
+
       </main>
     </AppLayout>
   );

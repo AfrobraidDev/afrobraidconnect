@@ -27,10 +27,15 @@ export default function HeroComponent() {
     {
       src: "/images/person2.png",
       alt: "Smiling man with locs",
-      className: "rounded-[100px]",
+      className: "rounded-[120px]",
     },
     {
       src: "/images/person3.png",
+      alt: "Woman with curly braids",
+      className: "rounded-2xl",
+    },
+    {
+      src: "/images/person4.png",
       alt: "Woman with curly braids",
       className: "rounded-2xl",
     },
@@ -60,16 +65,21 @@ export default function HeroComponent() {
             key={i}
             className={`overflow-hidden ${img.className} w-72 h-80 relative`}
           >
-            <Image src={img.src} alt={img.alt} fill className="object-cover" />
+            <Image src={img.src} alt={img.alt} fill className="object-cover object-[center_20%]" />
           </div>
         ))}
       </div>
 
       {/* Text below */}
-      <p className="mt-10 text-lg sm:text-xl lg:text-2xl text-gray-800 text-center px-4">
-        <span className="font-semibold">{appointments.toLocaleString()}</span>{" "}
-        appointments booked today
+      <p className="mt-10 text-center px-4">
+        <span className="font-instrument font-semibold text-[24px] leading-8 tracking-normal align-middle">
+          {appointments.toLocaleString()}
+        </span>{" "}
+        <span className="font-instrument font-normal text-[24px] leading-8 tracking-[-0.015em] align-middle">
+          appointments booked today
+        </span>
       </p>
+
     </section>
   );
 }

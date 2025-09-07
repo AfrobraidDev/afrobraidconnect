@@ -1,42 +1,30 @@
 // components/footer.tsx
 import Link from "next/link";
-import { FaFacebook, FaTwitter, FaLinkedin, FaInstagram } from "react-icons/fa";
+import { FaArrowUp } from "react-icons/fa";
+import { LanguageSelector } from "./language-selector";
+import Image from "next/image";
 
 export function Footer() {
   return (
-    <footer className="border-t py-12 px-4 sm:px-6 lg:px-60 bg-gray-50">
-      <div className="container grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-8 mb-8">
-        {/* Product Section */}
-        <div className="space-y-4">
-          <h3 className="font-semibold text-gray-900">Product</h3>
-          <nav className="flex flex-col space-y-2">
-            <FooterLink href="/features">Features</FooterLink>
-            <FooterLink href="/pricing">Pricing</FooterLink>
-            <FooterLink href="/status">Status</FooterLink>
-            <FooterLink href="/support">Support</FooterLink>
-          </nav>
+    <footer className="bg-[#170D07] py-12 px-4 sm:px-6 lg:px-12 text-white">
+      {/* Top section */}
+      <div className="max-w-full mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 md:gap-8 mb-12">
+        {/* Logo */}
+        <div className="flex items-start w-full">
+          <Link href="/">
+            <Image
+              src="/images/afro-logo1.png"
+              alt="Afro-Connect Logo"
+              width={150}
+              height={50}
+              className="object-contain w-auto max-w-[120px] md:max-w-[150px]"
+            />
+          </Link>
         </div>
 
-        {/* About Afro-Connect */}
+        {/* Legal */}
         <div className="space-y-4">
-          <h3 className="font-semibold text-gray-900">About Afro-Connect</h3>
-          <nav className="flex flex-col space-y-2">
-            <FooterLink href="/about">About Us</FooterLink>
-            <FooterLink href="/careers">Careers</FooterLink>
-            <FooterLink href="/blog">Blog</FooterLink>
-            <FooterLink href="/sitemap">Sitemap</FooterLink>
-          </nav>
-        </div>
-
-        {/* Business & Legal */}
-        <div className="space-y-4">
-          <h3 className="font-semibold text-gray-900">For Business</h3>
-          <nav className="flex flex-col space-y-2">
-            <FooterLink href="/business">For Partners</FooterLink>
-            <FooterLink href="/pricing">Pricing</FooterLink>
-          </nav>
-
-          <h3 className="font-semibold text-gray-900 mt-4">Legal</h3>
+          <h3 className="font-semibold">Legal</h3>
           <nav className="flex flex-col space-y-2">
             <FooterLink href="/privacy">Privacy Policy</FooterLink>
             <FooterLink href="/terms">Terms of Service</FooterLink>
@@ -44,39 +32,49 @@ export function Footer() {
           </nav>
         </div>
 
-        {/* Social & Newsletter */}
+        {/* For Business */}
         <div className="space-y-4">
-          <h3 className="font-semibold text-gray-900">Connect With Us</h3>
-          <div className="flex space-x-4">
-            <SocialIcon href="https://facebook.com/afroconnect" icon={<FaFacebook />} />
-            <SocialIcon href="https://twitter.com/afroconnect" icon={<FaTwitter />} />
-            <SocialIcon href="https://linkedin.com/company/afroconnect" icon={<FaLinkedin />} />
-            <SocialIcon href="https://instagram.com/afroconnect" icon={<FaInstagram />} />
-          </div>
+          <h3 className="font-semibold">For Business</h3>
+          <nav className="flex flex-col space-y-2">
+            <FooterLink href="/business">For Partners</FooterLink>
+            <FooterLink href="/pricing">Pricing</FooterLink>
+          </nav>
+        </div>
 
-          <div className="mt-4">
-            <h3 className="font-semibold text-gray-900 mb-2">Newsletter</h3>
-            <div className="flex">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="flex-1 bg-white border border-gray-300 px-3 py-2 rounded-l-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-              <button className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 text-sm rounded-r-md transition">
-                Subscribe
-              </button>
-            </div>
+        {/* Company */}
+        <div className="space-y-4">
+          <h3 className="font-semibold">Company</h3>
+          <nav className="flex flex-col space-y-2">
+            <FooterLink href="/about">About</FooterLink>
+            <FooterLink href="/contact">Contact</FooterLink>
+            <FooterLink href="/blog">Blog</FooterLink>
+            <FooterLink href="/sitemap">Sitemap</FooterLink>
+            <FooterLink href="/how-it-works">How it Works</FooterLink>
+          </nav>
+        </div>
+
+        {/* Socials */}
+        <div className="space-y-4">
+          <h3 className="font-semibold">Connect With Us</h3>
+          {/* Social links: horizontal on mobile, vertical on tablet/desktop */}
+          <div className="flex flex-row flex-wrap gap-4 md:flex-col md:gap-2">
+            <SocialLink href="https://facebook.com/afroconnect" name="Facebook" />
+            <SocialLink href="https://twitter.com/afroconnect" name="Twitter" />
+            <SocialLink href="https://linkedin.com/company/afroconnect" name="LinkedIn" />
+            <SocialLink href="https://instagram.com/afroconnect" name="Instagram" />
           </div>
         </div>
       </div>
 
-      <div className="container border-t pt-6 flex flex-col md:flex-row justify-between items-center">
-        <div className="mb-4 md:mb-0">
-          <Link href="/" className="text-gray-900 font-bold hover:text-purple-600 transition">
-            Afro-Connect
-          </Link>
+      {/* Bottom section */}
+      <div className="border-t border-gray-700 pt-6 flex flex-col sm:flex-row justify-between items-center flex-wrap">
+        {/* Left - Language Selector */}
+        <div className="mb-4 sm:mb-0">
+          <LanguageSelector />
         </div>
-        <div className="text-sm text-gray-500">
+
+        {/* Right - Copyright */}
+        <div className="text-sm opacity-60">
           © {new Date().getFullYear()} Afro-Connect. All rights reserved.
         </div>
       </div>
@@ -84,27 +82,29 @@ export function Footer() {
   );
 }
 
-// Reusable components
+// Footer link component
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <Link
       href={href}
-      className="text-sm text-gray-600 hover:text-purple-600 hover:underline transition-colors"
+      className="text-sm text-white hover:text-gray-500 hover:underline transition-colors"
     >
       {children}
     </Link>
   );
 }
 
-function SocialIcon({ href, icon }: { href: string; icon: React.ReactNode }) {
+// Social link with up-arrow icon before the name
+function SocialLink({ href, name }: { href: string; name: string }) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-gray-500 hover:text-purple-600 text-lg transition-colors"
+      className="flex items-center space-x-1 text-white hover:text-gray-500 transition-colors text-sm md:text-base"
     >
-      {icon}
+      <FaArrowUp className="transform rotate-12 text-sm md:text-base" />
+      <span>{name}</span>
     </a>
   );
 }

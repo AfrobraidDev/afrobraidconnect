@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+// import { ChevronLeft, ChevronRight } from "lucide-react";
+import { FaArrowLeft, FaArrowRight  } from "react-icons/fa6"
 import ServiceCard from "@/components/service-card";
 
 type ServiceCarouselProps = {
@@ -37,9 +38,9 @@ export default function ServiceCarousel({ services }: ServiceCarouselProps) {
           onClick={() => scroll("left")}
           aria-label="Scroll left"
           className="absolute left-0 top-1/2 -translate-y-1/2 z-10 
-                     bg-white shadow-md rounded-full p-2 hover:bg-gray-100 w-14 h-14 flex items-center justify-center -ml-4"
+                     bg-white shadow-md rounded-full p-2 hover:bg-gray-100 w-14 h-14 flex items-center justify-center -ml-4 cursor-pointer"
         >
-          <ChevronLeft className="w-6 h-6" />
+          <FaArrowLeft className="w-6 h-6" />
         </button>
       )}
 
@@ -68,9 +69,9 @@ export default function ServiceCarousel({ services }: ServiceCarouselProps) {
           onClick={() => scroll("right")}
           aria-label="Scroll right"
           className="absolute right-0 top-1/2 -translate-y-1/2 z-10 
-                     bg-white shadow-md rounded-full p-2 hover:bg-gray-100 w-14 h-14 flex items-center justify-center -mr-4"
+                     bg-white shadow-md rounded-full p-2 hover:bg-gray-100 w-14 h-14 flex items-center justify-center -mr-4 cursor-pointer"
         >
-          <ChevronRight className="w-6 h-6" />
+          <FaArrowRight className="w-6 h-6" />
         </button>
       )}
     </div>
