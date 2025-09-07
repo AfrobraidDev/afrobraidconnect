@@ -121,7 +121,7 @@ const ReviewsSection = () => {
         <span className="inline-block bg-[#FAF3EF] text-[#e25c0e] font-bold px-6 py-2 rounded-full mb-4 border-[1px] border-[#e27b40]">
           Reviews
         </span>
-        <h2 className="w-full text-3xl md:text-4xl font-bold mb-2 text-nowrap">
+        <h2 className="w-full text-3xl md:text-4xl font-bold mb-2 text-wrap lg:text-nowrap">
           Rated ★★★★★ by Customers
         </h2>
         <p className="text-gray-600 text-lg md:text-xl">

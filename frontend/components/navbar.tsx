@@ -1,19 +1,19 @@
 'use client';
 import Link from "next/link";
-import { Button } from "@/components/ui/button"
-import Image from "next/image"
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu, Download, Briefcase, User, LogOut, Settings } from "lucide-react";
+import { Download, Briefcase, User, LogOut, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { RiMenu3Fill } from "react-icons/ri"
+import { RiMenu3Fill } from "react-icons/ri";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,10 +38,7 @@ export function Navbar() {
 
   // Handle scroll effect
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -56,11 +53,9 @@ export function Navbar() {
 
   // Check auth status and load user data
   useEffect(() => {
-    const token = typeof window !== 'undefined' ?
-      sessionStorage.getItem('access_token') ||
-      document.cookie.split('; ')
-        .find(row => row.startsWith('access_token='))
-        ?.split('=')[1] : null;
+    const token = typeof window !== 'undefined'
+      ? sessionStorage.getItem('access_token') || document.cookie.split('; ').find(row => row.startsWith('access_token='))?.split('=')[1]
+      : null;
 
     if (token) {
       setIsLoggedIn(true);
@@ -94,24 +89,16 @@ export function Navbar() {
 
   const getRoleBasedLink = () => {
     if (!userData.role) return '/';
-
     const currentDomain = window.location.hostname;
     const isLocalhost = currentDomain.includes('localhost');
     const baseDomain = isLocalhost ? 'localhost:3000' : currentDomain.split('.').slice(-2).join('.');
-
     switch (userData.role.toLowerCase()) {
       case 'admin':
-        return isLocalhost
-          ? `http://admin.localhost:3000`
-          : `https://admin.${baseDomain}`;
+        return isLocalhost ? `http://admin.localhost:3000` : `https://admin.${baseDomain}`;
       case 'braider':
-        return isLocalhost
-          ? `http://braider.localhost:3000`
-          : `https://braider.${baseDomain}`;
+        return isLocalhost ? `http://braider.localhost:3000` : `https://braider.${baseDomain}`;
       case 'customer':
-        return isLocalhost
-          ? `http://localhost:3000/dashboard/customer`
-          : `https://${baseDomain}/dashboard/customer`;
+        return isLocalhost ? `http://localhost:3000/dashboard/customer` : `https://${baseDomain}/dashboard/customer`;
       default:
         return '/';
     }
@@ -251,10 +238,7 @@ export function Navbar() {
   );
 
   return (
-    <header className={`sticky top-0 z-50 w-full backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 sm:px-6 lg:px-60 transition-all duration-300 ${isScrolled
-      ? 'border-b'
-      : 'border-b-0'
-      } ${isScrolled ? 'bg-transparent' : 'bg-custom-cream'}`}>
+    <header className={`sticky top-0 z-50 w-full backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 sm:px-6 lg:px-60 transition-all duration-300 ${isScrolled ? 'border-b' : 'border-b-0'} ${isScrolled ? 'bg-transparent' : 'bg-custom-cream'}`}>
       <div className="flex h-16 items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">
@@ -268,9 +252,8 @@ export function Navbar() {
           />
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* Desktop / Mobile Navigation */}
         <div className="flex items-center gap-2 sm:gap-4">
-          {/* Login button comes first when not logged in */}
           {!isLoggedIn && (
             <Button
               variant="outline"
@@ -284,7 +267,6 @@ export function Navbar() {
             </Button>
           )}
 
-          {/* Avatar comes before List Your Business when logged in */}
           {isLoggedIn && (
             <Avatar className="h-8 w-8 cursor-pointer hidden sm:flex" onClick={() => window.location.href = getRoleBasedLink()}>
               <AvatarImage src={userData.avatar} />
@@ -294,7 +276,6 @@ export function Navbar() {
             </Avatar>
           )}
 
-          {/* Then List Your Business button */}
           <Button variant="outline" size="sm" asChild className="hidden sm:flex cursor-pointer rounded-full text-black transition-all ease-in-out">
             <Link href="/for-business">
               Join as a Braider
@@ -311,12 +292,10 @@ export function Navbar() {
                 className="flex gap-1 cursor-pointer"
               >
                 <span className="sr-only sm:not-sr-only">Navigation</span>
-                <Menu className="h-4 w-4" />
+                <RiMenu3Fill className="h-4 w-4" />
               </Button>
-              {isMenuOpen && <MobileMenu />}
             </>
           ) : (
-            /* Desktop Dropdown */
             <div className="flex items-center gap-2">
               {isLoggedIn && (
                 <Avatar className="h-8 w-8 cursor-pointer sm:hidden" onClick={() => window.location.href = getRoleBasedLink()}>
@@ -330,16 +309,13 @@ export function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="flex gap-1 cursor-pointer rounded-full">
                     <span className="sr-only sm:not-sr-only">Navigation</span>
-                    <RiMenu3Fill />
+                    <RiMenu3Fill className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   {isLoggedIn ? (
                     <>
-                      <DropdownMenuItem
-                        onClick={() => window.location.href = getRoleBasedLink()}
-                        className="cursor-pointer"
-                      >
+                      <DropdownMenuItem onClick={() => window.location.href = getRoleBasedLink()} className="cursor-pointer">
                         <User className="mr-2 h-4 w-4" />
                         <span>Profile</span>
                       </DropdownMenuItem>
@@ -359,10 +335,7 @@ export function Navbar() {
                       <div className="relative px-2 py-1.5 text-xs text-muted-foreground">
                         Account
                       </div>
-                      <DropdownMenuItem
-                        onClick={() => setShowLogoutConfirm(true)}
-                        className="text-red-500 focus:text-red-500 cursor-pointer"
-                      >
+                      <DropdownMenuItem onClick={() => setShowLogoutConfirm(true)} className="text-red-500 focus:text-red-500 cursor-pointer">
                         <LogOut className="mr-2 h-4 w-4" />
                         <span>Log out</span>
                       </DropdownMenuItem>
@@ -382,8 +355,6 @@ export function Navbar() {
                           <span>Download App</span>
                         </Link>
                       </DropdownMenuItem>
-
-
                       <div className="relative px-2 py-1.5 text-xs text-muted-foreground">
                         Business
                       </div>
@@ -405,6 +376,9 @@ export function Navbar() {
         </div>
       </div>
 
+      {/* Render Mobile Menu */}
+      {isMobile && isMenuOpen && <MobileMenu />}
+
       {/* Logout Confirmation Dialog */}
       <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
         <AlertDialogContent>
@@ -416,10 +390,7 @@ export function Navbar() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-500 hover:bg-red-600 cursor-pointer"
-              onClick={handleLogout}
-            >
+            <AlertDialogAction className="bg-red-500 hover:bg-red-600 cursor-pointer" onClick={handleLogout}>
               Yes, log out
             </AlertDialogAction>
           </AlertDialogFooter>
