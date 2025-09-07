@@ -8,7 +8,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-instrument-sans)", "sans-serif"], // 👈 now default
+        sans: ["var(--font-instrument-sans)", "sans-serif"],
       },
     },
   },
