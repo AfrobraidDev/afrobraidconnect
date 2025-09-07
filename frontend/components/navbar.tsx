@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { RiMenu3Fill } from "react-icons/ri"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -329,7 +330,7 @@ export function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="flex gap-1 cursor-pointer rounded-full">
                     <span className="sr-only sm:not-sr-only">Navigation</span>
-                    <Menu className="h-4 w-4" />
+                    <RiMenu3Fill />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">

@@ -63,7 +63,7 @@ export function LanguageSelector() {
               <button
                 key={language.code}
                 className={`w-full flex items-center gap-3 p-3 rounded-lg text-left hover:bg-gray-100 transition-colors cursor-pointer ${
-                  selectedLanguage.code === language.code ? 'bg-purple-50 border border-purple-200' : ''
+                  selectedLanguage.code === language.code ? 'bg-[#D0865A]/50 border border-[#D0865A]/200' : ''
                 }`}
                 onClick={() => handleLanguageSelect(language)}
               >
