@@ -1,16 +1,10 @@
-import axios, {
-  AxiosInstance,
-  AxiosRequestConfig,
-  AxiosResponse,
-  AxiosError,
-} from "axios";
+import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios";
 
-// Define generic request types
 interface ApiControllerProps {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   url: string;
-  data?: any;
-  params?: any;
+  data?: unknown;
+  params?: unknown;
   requiresAuth?: boolean;
   token?: string | null;
 }
@@ -41,7 +35,6 @@ export const apiController = async <T>({
         new Error("Authentication token is missing for a protected route.")
       );
     }
-    // Type-safe header assignment
     axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
 

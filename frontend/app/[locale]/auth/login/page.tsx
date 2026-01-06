@@ -24,7 +24,7 @@ export default function LoginView() {
 
   const [password, setPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [emailError, setEmailError] = useState<string>("");
+  const [emailError] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -51,7 +51,6 @@ export default function LoginView() {
   ];
 
   const handleLanguageChange = (newLocale: string) => {
-    // @ts-ignore
     router.replace(pathname, { locale: newLocale });
     setIsLangMenuOpen(false);
   };
@@ -92,10 +91,10 @@ export default function LoginView() {
         if (isPhoneVerified && isDocVerified && isPayoutsEnabled) {
           router.push("/");
         } else {
-          router.push("/auth/login");
+          router.push("/");
         }
       } else {
-        router.push("/auth/login");
+        router.push("/");
       }
 
       setIsLoading(false);

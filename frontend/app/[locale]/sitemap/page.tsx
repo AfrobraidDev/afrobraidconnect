@@ -1,6 +1,6 @@
 // app/sitemap/page.tsx
-import AppLayout from '@/components/app-layout';
-import Link from 'next/link';
+import AppLayout from "@/components/app-layout";
+import { Link } from "@/navigation";
 
 export default function SitemapPage() {
   return (
@@ -8,7 +8,9 @@ export default function SitemapPage() {
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Afro-Connect Sitemap</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Afro-Connect Sitemap
+            </h1>
             <p className="text-lg text-gray-600">
               Explore all pages and features of our platform
             </p>
@@ -30,17 +32,23 @@ export default function SitemapPage() {
               <SitemapLink href="/services/hair">Hair Services</SitemapLink>
               <SitemapLink href="/services/nails">Nail Services</SitemapLink>
               <SitemapLink href="/services/skin">Skin Treatments</SitemapLink>
-              <SitemapLink href="/services/massage">Massage Therapy</SitemapLink>
+              <SitemapLink href="/services/massage">
+                Massage Therapy
+              </SitemapLink>
               <SitemapLink href="/services/makeup">Makeup Services</SitemapLink>
             </Section>
 
             {/* Business */}
             <Section title="For Businesses">
               <SitemapLink href="/business">Business Home</SitemapLink>
-              <SitemapLink href="/business/register">Register Your Business</SitemapLink>
+              <SitemapLink href="/business/register">
+                Register Your Business
+              </SitemapLink>
               <SitemapLink href="/business/pricing">Pricing Plans</SitemapLink>
               <SitemapLink href="/business/resources">Resources</SitemapLink>
-              <SitemapLink href="/business/testimonials">Success Stories</SitemapLink>
+              <SitemapLink href="/business/testimonials">
+                Success Stories
+              </SitemapLink>
             </Section>
 
             {/* User Account */}
@@ -55,7 +63,9 @@ export default function SitemapPage() {
             {/* Legal */}
             <Section title="Legal">
               <SitemapLink href="/privacy-policy">Privacy Policy</SitemapLink>
-              <SitemapLink href="/terms-of-service">Terms of Service</SitemapLink>
+              <SitemapLink href="/terms-of-service">
+                Terms of Service
+              </SitemapLink>
               <SitemapLink href="/cookie-policy">Cookie Policy</SitemapLink>
               <SitemapLink href="/accessibility">Accessibility</SitemapLink>
             </Section>
@@ -70,10 +80,12 @@ export default function SitemapPage() {
           </div>
 
           <div className="mt-12 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Discover Afro-Connect</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Discover Afro-Connect
+            </h2>
             <p className="text-gray-600 mb-4">
-              Our sitemap helps you navigate all the features and services we offer.
-              Can&apos;t find what you&apos;re looking for?
+              Our sitemap helps you navigate all the features and services we
+              offer. Can&apos;t find what you&apos;re looking for?
             </p>
             <Link
               href="/contact"
@@ -89,7 +101,13 @@ export default function SitemapPage() {
 }
 
 // Reusable section component
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">{title}</h2>
@@ -99,7 +117,13 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 // Reusable sitemap link component
-function SitemapLink({ href, children }: { href: string; children: React.ReactNode }) {
+function SitemapLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
   return (
     <li>
       <Link
