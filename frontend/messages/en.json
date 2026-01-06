@@ -1,0 +1,22 @@
+{
+  "HomePage": {
+    "recentlyViewed": "Recently Viewed",
+    "recommended": "Recommended",
+    "trending": "Trending",
+    "newToAfroBraid": "New to AfroBraids"
+  },
+  "Metadata": {
+    "title": "AfroBraids Connect - Nearby braiders, trusted reviews, fair prices."
+  },
+  "Auth": {
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Please enter your details to sign in.",
+    "forgotPassword": "Forgot password?",
+    "signingIn": "Signing in...",
+    "signIn": "Sign in",
+    "or": "or",
+    "googleSignIn": "Sign in with Google",
+    "signUpPrompt": "Don't have an account?",
+    "signUpLink": "Sign up"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "HomePage": {
+    "recentlyViewed": "Consultés récemment",
+    "recommended": "Recommandés",
+    "trending": "Tendances",
+    "newToAfroBraid": "Nouveau sur AfroBraids"
+  },
+  "Metadata": {
+    "title": "AfroBraids Connect - Tresseurs à proximité, avis fiables."
+  },
+  "Auth": {
+    "loginTitle": "Bon retour",
+    "loginSubtitle": "Veuillez entrer vos coordonnées pour vous connecter.",
+    "forgotPassword": "Mot de passe oublié ?",
+    "signingIn": "Connexion en cours...",
+    "signIn": "Se connecter",
+    "or": "ou",
+    "googleSignIn": "Se connecter avec Google",
+    "signUpPrompt": "Vous n'avez pas de compte ?",
+    "signUpLink": "S'inscrire"
+  }
+}

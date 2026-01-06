@@ -1,0 +1,22 @@
+{
+  "HomePage": {
+    "recentlyViewed": "Kürzlich angesehen",
+    "recommended": "Empfohlen",
+    "trending": "Im Trend",
+    "newToAfroBraid": "Neu bei AfroBraids"
+  },
+  "Metadata": {
+    "title": "AfroBraids Connect - Flechter in der Nähe, vertrauenswürdige Bewertungen."
+  },
+  "Auth": {
+    "loginTitle": "Willkommen zurück",
+    "loginSubtitle": "Bitte geben Sie Ihre Daten ein, um sich anzumelden.",
+    "forgotPassword": "Passwort vergessen?",
+    "signingIn": "Anmelden...",
+    "signIn": "Anmelden",
+    "or": "oder",
+    "googleSignIn": "Mit Google anmelden",
+    "signUpPrompt": "Sie haben noch kein Konto?",
+    "signUpLink": "Registrieren"
+  }
+}

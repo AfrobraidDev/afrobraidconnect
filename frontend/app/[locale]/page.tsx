@@ -4,8 +4,8 @@ import HeroSection from "@/components/Hero-Section";
 import AppLayout from "@/components/app-layout";
 import ServiceCarousel from "@/components/service-carousel";
 import ServiceCard from "@/components/service-card";
-import { useRecentlyViewed } from "./context/RecentlyViewedContext";
-import HowItWorksSection from '@/components/how-it-works'
+import { useRecentlyViewed } from "../context/RecentlyViewedContext";
+import HowItWorksSection from "@/components/how-it-works";
 import GrowYourBusinessSection from "@/components/grow-business";
 import HeroDownSection from "@/components/hero-down-section";
 import ReviewsSection from "@/components/reviews-section";
@@ -193,7 +193,9 @@ export default function Home() {
         {/* recently viewed */}
         {recentlyViewed.length > 0 && (
           <section className="mt-12 mb-20 ml-5 mr-10 lg:ml-20 lg:mr-20">
-            <h2 className="text-4xl font-bold mb-6 mx-[20px]">Recently Viewed</h2>
+            <h2 className="text-4xl font-bold mb-6 mx-[20px]">
+              Recently Viewed
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {recentlyViewed.map((service, idx) => (
                 <ServiceCard key={idx} {...service} />
@@ -216,7 +218,9 @@ export default function Home() {
 
         {/* newToAfroBraid */}
         <section className="mt-12 mb-20 ml-5 mr-10 lg:ml-20 lg:mr-20">
-          <h2 className="text-4xl font-bold mb-6 mx-[20px]">New to AfroBraids</h2>
+          <h2 className="text-4xl font-bold mb-6 mx-[20px]">
+            New to AfroBraids
+          </h2>
           <ServiceCarousel services={newToAfroBraid} />
         </section>
 
@@ -230,11 +234,10 @@ export default function Home() {
         <ReviewsSection />
 
         {/* faqs section */}
-        <FAQsSection/>
+        <FAQsSection />
 
         {/* Hero down section */}
         <HeroDownSection />
-
       </main>
     </AppLayout>
   );
