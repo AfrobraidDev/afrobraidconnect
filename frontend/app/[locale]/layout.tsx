@@ -26,16 +26,12 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  // In Next.js 15, params must be awaited
   const { locale } = await params;
 
-  // Validate locale
   if (!["en", "de", "fr"].includes(locale)) {
     notFound();
   }
 
-  // Provide all messages to the client
-  // side is the easiest way to get started
   const messages = await getMessages();
 
   return (
