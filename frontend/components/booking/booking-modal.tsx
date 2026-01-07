@@ -49,7 +49,6 @@ interface BookingModalProps {
 
 type Step = "CUSTOMIZE" | "SCHEDULE" | "PAYMENT" | "SUCCESS";
 
-// --- NEW: Currency Formatter Helper ---
 const formatPrice = (amount: number | string) => {
   const numericAmount =
     typeof amount === "string" ? parseFloat(amount) : amount;
@@ -85,7 +84,7 @@ export default function BookingModal({
     useInitiateBooking();
 
   const { data: wallet, isLoading: isWalletLoading } = useWalletBalance(
-    isOpen && step === "SCHEDULE"
+    isOpen && step === "SCHEDULE" && !!session
   );
 
   const { data: availableSlots = [], isFetching: isSlotsFetching } = useQuery({
@@ -211,9 +210,6 @@ export default function BookingModal({
     icon: React.ReactNode,
     slots: string[]
   ) => {
-    const hasAvailable = slots.some((slot) => availableSlots.includes(slot));
-    if (!hasAvailable) return null;
-
     return (
       <div className="mb-6 last:mb-0">
         <h5 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
@@ -235,7 +231,7 @@ export default function BookingModal({
                       ? "bg-[#D0865A] text-white border-[#D0865A] shadow-md scale-105 z-10 font-bold"
                       : isAvailable
                       ? "bg-white text-gray-700 border-gray-200 hover:border-[#D0865A] hover:bg-[#D0865A]/5 hover:text-[#D0865A]"
-                      : "bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed opacity-60"
+                      : "bg-red-50 text-red-400 border-red-100 cursor-not-allowed shadow-none"
                   }
                 `}
               >
@@ -350,13 +346,8 @@ export default function BookingModal({
                               >
                                 {variant.name}
                               </span>
-                              {/* Updated to Euro */}
                               <span className="font-semibold text-gray-900">
-                                +
-                                {formatPrice(variant.price_adjustment).replace(
-                                  "€",
-                                  "€"
-                                )}
+                                +{formatPrice(variant.price_adjustment)}
                               </span>
                             </div>
                             <div className="text-xs text-gray-400 uppercase mt-0.5 tracking-wide">
@@ -373,7 +364,7 @@ export default function BookingModal({
               {/* STEP 2: SCHEDULE */}
               {step === "SCHEDULE" && (
                 <div className="space-y-8">
-                  {/* CALENDAR - Fixed Alignment */}
+                  {/* CALENDAR */}
                   <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 sm:p-5 flex justify-center">
                     <Calendar
                       mode="single"
@@ -418,68 +409,69 @@ export default function BookingModal({
                     />
                   </div>
 
-                  {/* WALLET TOGGLE - Updated Currency */}
-                  <div
-                    className={`
-                  flex items-center justify-between p-4 rounded-xl border transition-all duration-300
-                  ${
-                    hasBalance
-                      ? "bg-[#FDF8F6] border-[#D0865A]/30 shadow-sm"
-                      : "bg-gray-50 border-gray-200"
-                  }
-                `}
-                  >
-                    <div className="flex items-center gap-3.5">
-                      <div
-                        className={`p-2.5 rounded-xl flex items-center justify-center ${
-                          hasBalance
-                            ? "bg-[#D0865A] text-white"
-                            : "bg-gray-200 text-gray-400"
-                        }`}
-                      >
-                        <Wallet className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p
-                            className={`font-semibold text-sm ${
-                              hasBalance ? "text-gray-900" : "text-gray-500"
-                            }`}
-                          >
-                            Pay with Wallet
-                          </p>
-                          {fullyCovered && useWallet && (
-                            <span className="text-[10px] font-bold bg-green-100 text-green-700 px-1.5 py-0.5 rounded border border-green-200">
-                              Covered
-                            </span>
-                          )}
+                  {/* WALLET TOGGLE */}
+                  {session && (
+                    <div
+                      className={`
+                    flex items-center justify-between p-4 rounded-xl border transition-all duration-300
+                    ${
+                      hasBalance
+                        ? "bg-[#FDF8F6] border-[#D0865A]/30 shadow-sm"
+                        : "bg-gray-50 border-gray-200"
+                    }
+                  `}
+                    >
+                      <div className="flex items-center gap-3.5">
+                        <div
+                          className={`p-2.5 rounded-xl flex items-center justify-center ${
+                            hasBalance
+                              ? "bg-[#D0865A] text-white"
+                              : "bg-gray-200 text-gray-400"
+                          }`}
+                        >
+                          <Wallet className="w-5 h-5" />
                         </div>
-                        <p className="text-xs text-gray-500 mt-0.5 font-medium">
-                          {isWalletLoading ? (
-                            <span className="animate-pulse">Loading...</span>
-                          ) : (
-                            // Wallet returns formatted string from backend, but fallback to Euro
-                            <>
-                              Balance:{" "}
-                              <span
-                                className={
-                                  hasBalance ? "text-[#D0865A] font-bold" : ""
-                                }
-                              >
-                                {wallet?.formatted || "€0.00"}
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p
+                              className={`font-semibold text-sm ${
+                                hasBalance ? "text-gray-900" : "text-gray-500"
+                              }`}
+                            >
+                              Pay with Wallet
+                            </p>
+                            {fullyCovered && useWallet && (
+                              <span className="text-[10px] font-bold bg-green-100 text-green-700 px-1.5 py-0.5 rounded border border-green-200">
+                                Covered
                               </span>
-                            </>
-                          )}
-                        </p>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-500 mt-0.5 font-medium">
+                            {isWalletLoading ? (
+                              <span className="animate-pulse">Loading...</span>
+                            ) : (
+                              <>
+                                Balance:{" "}
+                                <span
+                                  className={
+                                    hasBalance ? "text-[#D0865A] font-bold" : ""
+                                  }
+                                >
+                                  {wallet?.formatted || "€0.00"}
+                                </span>
+                              </>
+                            )}
+                          </p>
+                        </div>
                       </div>
+                      <Switch
+                        checked={useWallet}
+                        onCheckedChange={setUseWallet}
+                        disabled={!hasBalance || isWalletLoading}
+                        className="data-[state=checked]:bg-[#D0865A]"
+                      />
                     </div>
-                    <Switch
-                      checked={useWallet}
-                      onCheckedChange={setUseWallet}
-                      disabled={!hasBalance || isWalletLoading}
-                      className="data-[state=checked]:bg-[#D0865A]"
-                    />
-                  </div>
+                  )}
 
                   {/* TIME SLOTS */}
                   <div>
@@ -529,7 +521,6 @@ export default function BookingModal({
                         <span className="text-gray-600 text-sm font-medium">
                           Booking Total
                         </span>
-                        {/* Formatted Euro */}
                         <span className="font-bold text-gray-900 text-lg">
                           {formatPrice(paymentData.amountTotal)}
                         </span>
@@ -588,7 +579,7 @@ export default function BookingModal({
                           Powered by
                         </span>
                         <Image
-                          src="/stripe/stripe.webp"
+                          src="/images/stripe.svg"
                           alt="Stripe"
                           width={40}
                           height={20}
@@ -618,10 +609,6 @@ export default function BookingModal({
                       <span className="font-semibold text-gray-900">
                         {selectedTime}
                       </span>
-                    </p>
-                    <p>
-                      Please check your mail for your reciept, thank you for
-                      choosing us!
                     </p>
                   </div>
                   <Button
