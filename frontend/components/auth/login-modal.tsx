@@ -8,7 +8,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "@/navigation";
+import { usePathname } from "next/navigation";
 import { LogIn, UserPlus } from "lucide-react";
 
 interface LoginModalProps {
