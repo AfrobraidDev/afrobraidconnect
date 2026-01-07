@@ -3,19 +3,22 @@
 import React, { useState, FormEvent } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "@/navigation";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Lock, Mail } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import Input from "@/components/generics/Input";
 import Button from "@/components/generics/Button";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { LanguageSelector } from "@/components/language-selector";
 
 export default function LoginView() {
   const t = useTranslations("Auth");
-  const currentLocale = useLocale();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const [password, setPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -25,7 +28,7 @@ export default function LoginView() {
 
   const handleGoogleSignIn = () => {
     signIn("google", {
-      callbackUrl: `/${currentLocale}`,
+      callbackUrl: callbackUrl,
     });
   };
 
@@ -47,9 +50,7 @@ export default function LoginView() {
       const session = await getSession();
       const user = session?.user;
 
-      if (user?.role === "CUSTOMER") {
-        router.push("/");
-      } else if (user?.role === "BRAIDER") {
+      if (user?.role === "BRAIDER") {
         const profile = user.braiderProfile;
         const isPhoneVerified = profile?.is_phone_verified === true;
         const isDocVerified =
@@ -57,12 +58,12 @@ export default function LoginView() {
         const isPayoutsEnabled = profile?.is_payouts_enabled === true;
 
         if (isPhoneVerified && isDocVerified && isPayoutsEnabled) {
-          router.push("/");
+          router.push(callbackUrl);
         } else {
-          router.push("/");
+          router.push(callbackUrl);
         }
       } else {
-        router.push("/");
+        router.push(callbackUrl);
       }
 
       setIsLoading(false);

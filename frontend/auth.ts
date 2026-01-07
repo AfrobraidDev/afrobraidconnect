@@ -3,7 +3,6 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { apiController } from "@/lib/apiController";
 
-// Define the shape of the raw response from your Backend
 interface BackendAuthResponse {
   id?: string;
   email?: string;
@@ -12,7 +11,6 @@ interface BackendAuthResponse {
   role?: "CUSTOMER" | "BRAIDER" | "ADMIN";
   braider_profile?: any | null;
 
-  // Backend returns different keys for different endpoints
   access_token?: string;
   refresh_token?: string;
   access?: string;
@@ -80,7 +78,6 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         try {
-          // Verify Google token with your backend
           const data = await apiController<BackendAuthResponse>({
             method: "POST",
             url: "/auth/google/",
@@ -89,19 +86,14 @@ export const authOptions: NextAuthOptions = {
               role: "CUSTOMER",
             },
           });
-
-          // Normalize the token keys (handle both 'access' and 'access_token')
           const accessToken = data.access || data.access_token;
           const refreshToken = data.refresh || data.refresh_token;
 
           if (accessToken) {
             user.accessToken = accessToken;
             user.refreshToken = refreshToken || "";
-
-            // Your backend log showed NO user details, just tokens.
-            // We use the data if available, otherwise fallback to defaults or Google's data.
-            user.id = data.id || user.id; // Keep Google ID if backend doesn't send one
-            user.role = data.role || "CUSTOMER"; // Default to CUSTOMER as requested
+            user.id = data.id || user.id;
+            user.role = data.role || "CUSTOMER";
             user.braiderProfile = data.braider_profile || null;
 
             return true;
