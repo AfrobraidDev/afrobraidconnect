@@ -2,8 +2,7 @@
 
 import React, { useState, FormEvent } from "react";
 import { signIn, getSession } from "next-auth/react";
-import { useRouter } from "@/navigation";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Lock, Mail } from "lucide-react";
