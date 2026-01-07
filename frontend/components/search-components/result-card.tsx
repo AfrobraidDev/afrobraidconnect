@@ -8,7 +8,13 @@ import { BraiderResult } from "./types/search";
 import { Link } from "@/navigation";
 import { useState } from "react";
 
-export default function ResultCard({ data }: { data: BraiderResult }) {
+export default function ResultCard({
+  data,
+  dateParam,
+}: {
+  data: BraiderResult;
+  dateParam?: string | null;
+}) {
   const [isHoveringSkills, setIsHoveringSkills] = useState(false);
 
   const mainImage =
@@ -36,8 +42,12 @@ export default function ResultCard({ data }: { data: BraiderResult }) {
     isHoveringSkills && remainingCount > 0 ? BATCH_SIZE * 2 : BATCH_SIZE;
   const visibleSkills = totalSkills.slice(start, end);
 
+  const profileUrl = dateParam
+    ? `/braider/${data.id}?date=${dateParam}`
+    : `/braider/${data.id}`;
+
   return (
-    <Link href={`/braider/${data.id}`} className="block h-full">
+    <Link href={profileUrl} className="block h-full">
       <Card className="h-[380px] sm:h-[400px] rounded-lg overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300 group p-0 flex flex-col cursor-pointer bg-white">
         <div className="relative w-full h-[45%] shrink-0 bg-gray-100">
           <Image

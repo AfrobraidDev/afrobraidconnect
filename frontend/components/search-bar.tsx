@@ -15,7 +15,6 @@ import LocationPicker from "./location-picker";
 import { useRouter, useParams } from "next/navigation";
 import SearchValidationModal from "@/components/search-validation-modal";
 
-// Define Props Interface
 interface SearchBarProps {
   initialQuery?: string;
   initialLocationName?: string;
@@ -105,8 +104,11 @@ export function SearchBar({
       <div
         className={`flex flex-col sm:flex-row items-center bg-white border border-gray-200 rounded-2xl sm:rounded-full p-2 sm:p-1 shadow-sm hover:shadow-md transition-shadow duration-300 w-full gap-2 sm:gap-0 ${className}`}
       >
-        {/* Search Input */}
-        <div className="flex-1 w-full sm:w-auto px-3 sm:px-4 py-2 sm:border-r border-gray-200">
+        <div
+          className="flex-1 w-full sm:w-auto px-3 sm:px-4 py-2 sm:border-r border-gray-200"
+          onPointerDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+        >
           <div className="flex items-center gap-2">
             <Search className="h-4 w-4 text-gray-400 shrink-0" />
             <Input
@@ -118,17 +120,17 @@ export function SearchBar({
             />
           </div>
         </div>
-
-        {/* Location Selector */}
-        <div className="w-full sm:w-auto px-3 sm:px-4 py-2 sm:border-r border-gray-200">
+        <div
+          className="w-full sm:w-auto px-3 sm:px-4 py-2 sm:border-r border-gray-200"
+          onPointerDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+        >
           <LocationPicker
             selectedLocation={selectedLocation}
             setSelectedLocation={setSelectedLocation}
             setCoordinates={setCoordinates}
           />
         </div>
-
-        {/* Date Selector */}
         <div className="w-full sm:w-auto px-3 sm:px-4 py-2 sm:border-r border-gray-200">
           <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
             <PopoverTrigger asChild>
@@ -171,8 +173,6 @@ export function SearchBar({
             />
           )}
         </div>
-
-        {/* Search Button */}
         <div className="w-full sm:w-auto px-2 pb-2 sm:pb-0">
           <Button
             onClick={handleSearch}
@@ -182,8 +182,6 @@ export function SearchBar({
           </Button>
         </div>
       </div>
-
-      {/* Validation Modal */}
       <SearchValidationModal
         isOpen={errorModalOpen}
         onClose={() => setErrorModalOpen(false)}
