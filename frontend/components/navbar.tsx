@@ -1,16 +1,17 @@
 "use client";
-import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Download, Briefcase, User, LogOut, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "@/navigation";
+import { usePathname, useRouter, Link } from "@/navigation";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RiMenu3Fill } from "react-icons/ri";
@@ -25,15 +26,18 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { LanguageSelector } from "./language-selector";
+import { getSession, signOut } from "next-auth/react";
+
+interface UserData {
+  name?: string;
+  email?: string;
+  role?: string;
+  avatar?: string;
+}
 
 export function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserData] = useState<{
-    name?: string;
-    email?: string;
-    role?: string;
-    avatar?: string;
-  }>({});
+  const [userData, setUserData] = useState<UserData>({});
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -41,14 +45,12 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Check screen size
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 640);
     checkMobile();
@@ -56,37 +58,55 @@ export function Navbar() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Check auth status and load user data
   useEffect(() => {
-    const token =
-      typeof window !== "undefined"
-        ? sessionStorage.getItem("access_token") ||
-          document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("access_token="))
-            ?.split("=")[1]
-        : null;
-
-    if (token) {
-      setIsLoggedIn(true);
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
+    const checkAuth = async () => {
+      const session = await getSession();
+      if (session?.user) {
+        setIsLoggedIn(true);
         setUserData({
-          name: payload.name,
-          email: payload.email,
-          role: payload.role,
-          avatar: payload.avatar,
+          name: session.user.name || "",
+          email: session.user.email || "",
+          role: session.user.role,
+          avatar: session.user.image || undefined,
         });
-      } catch (e) {
-        console.error("Error parsing token", e);
+        return;
       }
-    } else {
-      setIsLoggedIn(false);
-      setUserData({});
-    }
+
+      const token =
+        typeof window !== "undefined"
+          ? sessionStorage.getItem("access_token") ||
+            document.cookie
+              .split("; ")
+              .find((row) => row.startsWith("access_token="))
+              ?.split("=")[1]
+          : null;
+
+      if (token) {
+        setIsLoggedIn(true);
+        try {
+          const parts = token.split(".");
+          if (parts.length === 3) {
+            const payload = JSON.parse(atob(parts[1]));
+            setUserData({
+              name: payload.name,
+              email: payload.email,
+              role: payload.role,
+              avatar: payload.avatar,
+            });
+          }
+        } catch (e) {
+          console.error("Error parsing token", e);
+        }
+      } else {
+        setIsLoggedIn(false);
+        setUserData({});
+      }
+    };
+    checkAuth();
   }, [pathname]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
     sessionStorage.removeItem("access_token");
     document.cookie =
       "access_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT";
@@ -101,30 +121,11 @@ export function Navbar() {
 
   const getRoleBasedLink = () => {
     if (!userData.role) return "/";
-    const currentDomain = window.location.hostname;
-    const isLocalhost = currentDomain.includes("localhost");
-    const baseDomain = isLocalhost
-      ? "localhost:3000"
-      : currentDomain.split(".").slice(-2).join(".");
-    switch (userData.role.toLowerCase()) {
-      case "admin":
-        return isLocalhost
-          ? `http://admin.localhost:3000`
-          : `https://admin.${baseDomain}`;
-      case "braider":
-        return isLocalhost
-          ? `http://braider.localhost:3000`
-          : `https://braider.${baseDomain}`;
-      case "customer":
-        return isLocalhost
-          ? `http://localhost:3000/dashboard/customer`
-          : `https://${baseDomain}/dashboard/customer`;
-      default:
-        return "/";
-    }
+    if (userData.role === "BRAIDER") return "/dashboard";
+    if (userData.role === "CUSTOMER") return "/dashboard";
+    return "/dashboard";
   };
 
-  // Mobile menu component
   const MobileMenu = () => (
     <div
       className="fixed inset-0 z-50 bg-[#FAF3EF] overflow-y-auto"
@@ -173,7 +174,7 @@ export function Navbar() {
                 variant="ghost"
                 className="w-full justify-start h-14 text-base cursor-pointer"
                 onClick={() => {
-                  window.location.href = getRoleBasedLink();
+                  router.push(getRoleBasedLink());
                   setIsMenuOpen(false);
                 }}
               >
@@ -184,12 +185,13 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 className="w-full justify-start h-14 text-base cursor-pointer"
-                asChild
+                onClick={() => {
+                  router.push("/settings");
+                  setIsMenuOpen(false);
+                }}
               >
-                <Link href="/settings" onClick={() => setIsMenuOpen(false)}>
-                  <Settings className="mr-3 h-5 w-5" />
-                  Settings
-                </Link>
+                <Settings className="mr-3 h-5 w-5" />
+                Settings
               </Button>
             </nav>
           </>
@@ -228,13 +230,9 @@ export function Navbar() {
               </Link>
             </Button>
 
-            <Button
-              variant="ghost"
-              className="w-full justify-start h-14 text-base cursor-pointer"
-              asChild
-            >
+            <div className="w-full justify-start h-14 text-base flex items-center pl-4">
               <LanguageSelector />
-            </Button>
+            </div>
           </nav>
         </div>
 
@@ -276,7 +274,6 @@ export function Navbar() {
       } ${isScrolled ? "bg-transparent" : "bg-custom-cream"}`}
     >
       <div className="flex h-16 items-center justify-between">
-        {/* Logo */}
         <Link href="/" className="flex items-center">
           <Image
             src="/images/afro-logo2.png"
@@ -284,11 +281,9 @@ export function Navbar() {
             width={180}
             height={40}
             className="object-contain"
-            priority
           />
         </Link>
 
-        {/* Desktop / Mobile Navigation */}
         <div className="flex items-center gap-2 sm:gap-4">
           {!isLoggedIn && (
             <Button
@@ -304,7 +299,7 @@ export function Navbar() {
           {isLoggedIn && (
             <Avatar
               className="h-8 w-8 cursor-pointer hidden sm:flex"
-              onClick={() => (window.location.href = getRoleBasedLink())}
+              onClick={() => router.push(getRoleBasedLink())}
             >
               <AvatarImage src={userData.avatar} />
               <AvatarFallback className="bg-[#D0865A] text-white">
@@ -322,7 +317,6 @@ export function Navbar() {
             <Link href="/for-business">Join as a Braider</Link>
           </Button>
 
-          {/* Menu Trigger */}
           {isMobile ? (
             <>
               <Button
@@ -340,7 +334,7 @@ export function Navbar() {
               {isLoggedIn && (
                 <Avatar
                   className="h-8 w-8 cursor-pointer sm:hidden"
-                  onClick={() => (window.location.href = getRoleBasedLink())}
+                  onClick={() => router.push(getRoleBasedLink())}
                 >
                   <AvatarImage src={userData.avatar} />
                   <AvatarFallback className="bg-[#D0865A] text-white">
@@ -363,9 +357,7 @@ export function Navbar() {
                   {isLoggedIn ? (
                     <>
                       <DropdownMenuItem
-                        onClick={() =>
-                          (window.location.href = getRoleBasedLink())
-                        }
+                        onClick={() => router.push(getRoleBasedLink())}
                         className="cursor-pointer"
                       >
                         <User className="mr-2 h-4 w-4" />
@@ -434,10 +426,8 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Render Mobile Menu */}
       {isMobile && isMenuOpen && <MobileMenu />}
 
-      {/* Logout Confirmation Dialog */}
       <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -463,8 +453,4 @@ export function Navbar() {
       </AlertDialog>
     </header>
   );
-}
-
-function DropdownMenuSeparator() {
-  return <div className="h-px bg-muted my-1" />;
 }

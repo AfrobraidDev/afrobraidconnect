@@ -1,59 +1,27 @@
 "use client";
 
-import React, { useState, useRef, useEffect, FormEvent } from "react";
+import React, { useState, FormEvent } from "react";
 import { signIn, getSession } from "next-auth/react";
-import { useRouter, usePathname } from "@/navigation";
+import { useRouter } from "@/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Lock, Mail, Globe, ChevronUp, Check } from "lucide-react";
+import { Lock, Mail } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import Input from "@/components/generics/Input";
 import Button from "@/components/generics/Button";
 import { useTranslations, useLocale } from "next-intl";
-
-type Language = {
-  code: string;
-  label: string;
-};
+import { LanguageSelector } from "@/components/language-selector";
 
 export default function LoginView() {
   const t = useTranslations("Auth");
   const currentLocale = useLocale();
   const router = useRouter();
-  const pathname = usePathname();
 
   const [password, setPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [emailError] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const [isLangMenuOpen, setIsLangMenuOpen] = useState<boolean>(false);
-  const langMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        langMenuRef.current &&
-        !langMenuRef.current.contains(event.target as Node)
-      ) {
-        setIsLangMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const languages: Language[] = [
-    { code: "en", label: "English" },
-    { code: "de", label: "Deutsch" },
-    { code: "fr", label: "Français" },
-  ];
-
-  const handleLanguageChange = (newLocale: string) => {
-    router.replace(pathname, { locale: newLocale });
-    setIsLangMenuOpen(false);
-  };
 
   const handleGoogleSignIn = () => {
     signIn("google", {
@@ -197,49 +165,15 @@ export default function LoginView() {
             </Link>
           </p>
         </main>
+
         <footer className="mt-12 flex justify-between items-center text-xs text-gray-500 relative">
           <div className="flex items-center space-x-1">
             <Mail className="w-4 h-4" />
-            <span>support@afrobraidconnect.com</span>
+            <span>support@afrobraidconnect.de</span>
           </div>
-          <div className="relative" ref={langMenuRef}>
-            <button
-              onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-              className="flex items-center space-x-2 hover:text-gray-900 transition-colors px-3 py-2 rounded-lg hover:bg-gray-50"
-            >
-              <Globe className="w-4 h-4" />
-              <span className="font-bold uppercase">{currentLocale}</span>
-              <ChevronUp
-                className={`w-3 h-3 transition-transform duration-200 ${
-                  isLangMenuOpen ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-            {isLangMenuOpen && (
-              <div className="absolute bottom-full right-0 mb-2 w-40 bg-white border border-gray-100 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
-                <div className="py-1">
-                  {languages.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => handleLanguageChange(lang.code)}
-                      className={`
-                        w-full text-left px-4 py-3 text-sm flex items-center justify-between hover:bg-gray-50 transition-colors
-                        ${
-                          currentLocale === lang.code
-                            ? "text-[#b5734c] font-semibold bg-orange-50/50"
-                            : "text-gray-700"
-                        }
-                      `}
-                    >
-                      <span>{lang.label}</span>
-                      {currentLocale === lang.code && (
-                        <Check className="w-3.5 h-3.5" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+
+          <div className="relative">
+            <LanguageSelector />
           </div>
         </footer>
       </div>
