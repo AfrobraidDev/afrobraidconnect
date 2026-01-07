@@ -309,7 +309,7 @@ function SearchContent() {
               No braiders found
             </h3>
             <p className="text-gray-500 mt-2 max-w-md mx-auto px-4">
-              We couldn't find any braiders matching your criteria. Try
+              We couldn&apos;t find any braiders matching your criteria. Try
               increasing the search radius or selecting a different date.
             </p>
             <Button
