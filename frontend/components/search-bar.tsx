@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,29 +9,59 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import CustomDatePicker from "./custom-date-picker";
 import LocationPicker from "./location-picker";
 import { useRouter, useParams } from "next/navigation";
 import SearchValidationModal from "@/components/search-validation-modal";
 
-export function SearchBar() {
+// Define Props Interface
+interface SearchBarProps {
+  initialQuery?: string;
+  initialLocationName?: string;
+  initialLat?: number;
+  initialLng?: number;
+  initialDate?: string;
+  className?: string;
+}
+
+export function SearchBar({
+  initialQuery = "",
+  initialLocationName = "",
+  initialLat,
+  initialLng,
+  initialDate,
+  className = "",
+}: SearchBarProps) {
   const router = useRouter();
   const params = useParams();
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const [selectedLocation, setSelectedLocation] = useState(initialLocationName);
+
   const [coordinates, setCoordinates] = useState<{
     lat: number;
     lng: number;
-  } | null>(null);
+  } | null>(
+    initialLat && initialLng ? { lat: initialLat, lng: initialLng } : null
+  );
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    initialDate ? parseISO(initialDate) : undefined
+  );
+
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isCalendarMobileOpen, setIsCalendarMobileOpen] = useState(false);
-
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    if (initialQuery) setSearchQuery(initialQuery);
+    if (initialLocationName) setSelectedLocation(initialLocationName);
+    if (initialLat && initialLng)
+      setCoordinates({ lat: initialLat, lng: initialLng });
+    if (initialDate) setSelectedDate(parseISO(initialDate));
+  }, [initialQuery, initialLocationName, initialLat, initialLng, initialDate]);
 
   const handleSearch = () => {
     if (!coordinates || !coordinates.lat || !coordinates.lng) {
@@ -72,20 +102,24 @@ export function SearchBar() {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row items-center bg-white border border-gray-200 rounded-2xl sm:rounded-full p-2 sm:p-1 shadow-sm hover:shadow-md transition-shadow duration-300 w-full max-w-4xl mx-auto gap-2 sm:gap-0">
+      <div
+        className={`flex flex-col sm:flex-row items-center bg-white border border-gray-200 rounded-2xl sm:rounded-full p-2 sm:p-1 shadow-sm hover:shadow-md transition-shadow duration-300 w-full gap-2 sm:gap-0 ${className}`}
+      >
+        {/* Search Input */}
         <div className="flex-1 w-full sm:w-auto px-3 sm:px-4 py-2 sm:border-r border-gray-200">
           <div className="flex items-center gap-2">
-            <Search className="h-4 w-4 text-gray-400" />
+            <Search className="h-4 w-4 text-gray-400 shrink-0" />
             <Input
               type="text"
               placeholder="Search for services..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-0 p-0 h-6 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400 text-sm sm:text-base"
+              className="border-0 p-0 h-6 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400 text-sm sm:text-base w-full"
             />
           </div>
         </div>
 
+        {/* Location Selector */}
         <div className="w-full sm:w-auto px-3 sm:px-4 py-2 sm:border-r border-gray-200">
           <LocationPicker
             selectedLocation={selectedLocation}
@@ -94,6 +128,7 @@ export function SearchBar() {
           />
         </div>
 
+        {/* Date Selector */}
         <div className="w-full sm:w-auto px-3 sm:px-4 py-2 sm:border-r border-gray-200">
           <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
             <PopoverTrigger asChild>
@@ -102,8 +137,10 @@ export function SearchBar() {
                 onClick={handleDateButtonClick}
                 className="flex items-center gap-2 p-0 h-6 text-sm font-normal text-gray-700 hover:bg-transparent cursor-pointer w-full sm:w-auto justify-start sm:justify-center"
               >
-                <Calendar className="h-4 w-4 text-gray-400" />
-                {selectedDate ? format(selectedDate, "MMM dd") : "Date"}
+                <Calendar className="h-4 w-4 text-gray-400 shrink-0" />
+                <span className="truncate">
+                  {selectedDate ? format(selectedDate, "MMM dd") : "Date"}
+                </span>
               </Button>
             </PopoverTrigger>
 
@@ -134,7 +171,9 @@ export function SearchBar() {
             />
           )}
         </div>
-        <div className="w-full sm:w-auto px-2">
+
+        {/* Search Button */}
+        <div className="w-full sm:w-auto px-2 pb-2 sm:pb-0">
           <Button
             onClick={handleSearch}
             className="w-full sm:w-auto rounded-xl sm:rounded-full bg-[#D0865A] hover:bg-[#BF764A] text-white px-6 py-2 transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer text-sm sm:text-base"
@@ -143,6 +182,8 @@ export function SearchBar() {
           </Button>
         </div>
       </div>
+
+      {/* Validation Modal */}
       <SearchValidationModal
         isOpen={errorModalOpen}
         onClose={() => setErrorModalOpen(false)}

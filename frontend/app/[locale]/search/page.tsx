@@ -1,15 +1,10 @@
-import BrowseByCity from "@/components/browse-by-city"
-import SearchCard from "@/components/search-card"
-import SearchUI from '@/components/search-ui'
-import AppLayout from "@/components/app-layout"
+import AppLayout from "@/components/app-layout";
+import SearchComponent from "@/components/search-components/SearchComponent";
 
 export default function SearchPage() {
-    return (
-        <AppLayout>
-            <SearchCard />
-
-            <BrowseByCity />
-            <SearchUI />
-        </AppLayout>
-    )
+  return (
+    <AppLayout>
+      <SearchComponent />
+    </AppLayout>
+  );
 }
