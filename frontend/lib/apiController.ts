@@ -9,6 +9,13 @@ interface ApiControllerProps {
   token?: string | null;
 }
 
+interface BackendErrorResponse {
+  message?: string;
+  detail?: string;
+  status?: string;
+  [key: string]: unknown;
+}
+
 export const apiController = async <T>({
   method,
   url,
@@ -31,9 +38,7 @@ export const apiController = async <T>({
 
   if (requiresAuth) {
     if (!token) {
-      return Promise.reject(
-        new Error("Authentication token is missing for a protected route.")
-      );
+      throw new Error("Authentication token is missing for a protected route.");
     }
     axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
@@ -47,18 +52,31 @@ export const apiController = async <T>({
     });
     return response.data;
   } catch (error) {
-    const axiosError = error as AxiosError;
+    const axiosError = error as AxiosError<BackendErrorResponse>;
 
     if (axiosError.response) {
-      console.error("API Error Status:", axiosError.response.status);
-      console.error("API Error Data:", axiosError.response.data);
-      throw axiosError.response.data;
+      const status = axiosError.response.status;
+      const errorData = axiosError.response.data;
+
+      const rawMessage =
+        errorData?.message ||
+        errorData?.detail ||
+        (typeof errorData === "string" ? errorData : null) ||
+        `Request failed with status ${status}`;
+
+      const cleanMessage = rawMessage.replace(/^(error|Error):\s*/, "");
+
+      console.error(`API Error (${status}):`, cleanMessage);
+
+      throw new Error(cleanMessage);
     } else if (axiosError.request) {
-      console.error("API No Response:", axiosError.request);
-      throw new Error("No response from server. Please check your connection.");
+      console.error("API No Response:", axiosError.message);
+      throw new Error(
+        "No response from server. Please check your internet connection."
+      );
     } else {
       console.error("API Setup Error:", axiosError.message);
-      throw error;
+      throw new Error("An unexpected client error occurred.");
     }
   }
 };
