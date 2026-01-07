@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { apiController } from "@/lib/apiController";
 import { BraiderProfileData, Service, Location } from "./types/braider";
@@ -58,11 +58,13 @@ function BraiderLogo({ url, alt }: { url: string; alt: string }) {
 
 export default function BraiderProfilePage() {
   const params = useParams();
+  const searchParams = useSearchParams();
+  const dateParam = searchParams.get("date");
+
   const [profile, setProfile] = useState<BraiderProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeLocation, setActiveLocation] = useState<Location | null>(null);
 
-  // Booking State
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
 
@@ -89,7 +91,6 @@ export default function BraiderProfilePage() {
     setIsBookingOpen(true);
   };
 
-  // --- NEW: Scroll Handler ---
   const scrollToServices = () => {
     const element = document.getElementById("services-section");
     if (element) {
@@ -148,7 +149,6 @@ export default function BraiderProfilePage() {
               </p>
             </div>
 
-            {/* Desktop CTA - Now Wired Up */}
             <div className="hidden md:block shrink-0">
               <Button
                 onClick={scrollToServices}
@@ -190,7 +190,7 @@ export default function BraiderProfilePage() {
               </section>
             )}
 
-            {/* Services - Added ID for scrolling */}
+            {/* Services */}
             <section
               id="services-section"
               className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-gray-100"
@@ -289,7 +289,6 @@ export default function BraiderProfilePage() {
         </div>
       </main>
 
-      {/* Mobile Sticky CTA - Now Wired Up */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 md:hidden z-40 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <Button
           onClick={scrollToServices}
@@ -305,13 +304,13 @@ export default function BraiderProfilePage() {
           onClose={() => setIsBookingOpen(false)}
           braiderId={profile.id}
           service={selectedService}
+          initialDate={dateParam}
         />
       )}
     </div>
   );
 }
 
-// ServiceItem Component (Same as before)
 function ServiceItem({
   service,
   onBook,

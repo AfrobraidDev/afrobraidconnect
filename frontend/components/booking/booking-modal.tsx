@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import Image from "next/image";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -23,6 +23,7 @@ import {
   Sunset,
   Moon,
   ShieldCheck,
+  X,
 } from "lucide-react";
 import { apiController } from "@/lib/apiController";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
@@ -45,6 +46,7 @@ interface BookingModalProps {
   onClose: () => void;
   braiderId: string;
   service: Service | null;
+  initialDate?: string | null;
 }
 
 type Step = "CUSTOMIZE" | "SCHEDULE" | "PAYMENT" | "SUCCESS";
@@ -64,13 +66,24 @@ export default function BookingModal({
   onClose,
   braiderId,
   service,
+  initialDate,
 }: BookingModalProps) {
   const { data: session } = useSession();
   const [showLoginModal, setShowLoginModal] = useState(false);
 
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+    if (initialDate) {
+      const parsed = parseISO(initialDate);
+      if (!isNaN(parsed.getTime())) {
+        return parsed;
+      }
+    }
+    return new Date();
+  });
+
   const [step, setStep] = useState<Step>("CUSTOMIZE");
+
   const [selectedVariations, setSelectedVariations] = useState<string[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [useWallet, setUseWallet] = useState(false);
 
@@ -252,7 +265,12 @@ export default function BookingModal({
       />
       <Dialog open={isOpen} onOpenChange={(open) => !open && resetAndClose()}>
         <DialogContent className="sm:max-w-lg w-full p-0 gap-0 overflow-hidden rounded-2xl bg-white max-h-[95vh] flex flex-col">
-          {/* HEADER */}
+          <button
+            onClick={resetAndClose}
+            className="absolute right-4 top-4 z-50 p-2 bg-gray-100/50 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <X className="w-4 h-4 text-gray-500" />
+          </button>
           <DialogHeader className="p-4 sm:p-5 border-b border-gray-100 bg-white z-20 shrink-0">
             <div className="flex items-center gap-3">
               {step !== "CUSTOMIZE" && step !== "SUCCESS" && (
@@ -579,7 +597,7 @@ export default function BookingModal({
                           Powered by
                         </span>
                         <Image
-                          src="/images/stripe.svg"
+                          src="/stripe/stripe.webp"
                           alt="Stripe"
                           width={40}
                           height={20}
@@ -609,6 +627,10 @@ export default function BookingModal({
                       <span className="font-semibold text-gray-900">
                         {selectedTime}
                       </span>
+                    </p>
+                    <p>
+                      Kindly check your mail for your reciept, thank you for
+                      choosing us!
                     </p>
                   </div>
                   <Button
