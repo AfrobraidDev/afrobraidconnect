@@ -121,9 +121,9 @@ export function Navbar() {
 
   const getRoleBasedLink = () => {
     if (!userData.role) return "/";
-    if (userData.role === "BRAIDER") return "/dashboard";
-    if (userData.role === "CUSTOMER") return "/dashboard";
-    return "/dashboard";
+    if (userData.role === "BRAIDER") return "/profile";
+    if (userData.role === "CUSTOMER") return "/profile";
+    return "/profile";
   };
 
   const MobileMenu = () => (

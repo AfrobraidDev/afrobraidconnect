@@ -9,10 +9,10 @@ import { BraiderProfileData, Service, Location } from "./types/braider";
 import {
   Star,
   CheckCircle2,
-  ShieldCheck,
   MapPin,
   Clock,
   ArrowRight,
+  BadgeCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -121,9 +121,9 @@ export default function BraiderProfilePage() {
                 {profile.document_verification_status === "VERIFIED" && (
                   <Badge
                     variant="secondary"
-                    className="w-fit bg-green-50 text-green-700 border-green-100 gap-1 px-2"
+                    className="w-fit bg-blue-50 text-blue-700 border-blue-100 gap-1 px-2"
                   >
-                    <ShieldCheck className="w-3.5 h-3.5" /> Verified
+                    <BadgeCheck className="w-5 h-5" /> Verified
                   </Badge>
                 )}
               </div>
