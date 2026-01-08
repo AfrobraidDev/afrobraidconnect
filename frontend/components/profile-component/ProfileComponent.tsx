@@ -113,7 +113,8 @@ export default function ProfilePage() {
           Unable to load profile
         </h2>
         <p className="text-gray-500 max-w-md">
-          We couldn't fetch your profile data. You might need to sign in again.
+          We couldn&apos;t fetch your profile data. You might need to sign in
+          again.
         </p>
         <div className="flex gap-3 mt-2">
           <Button variant="outline" onClick={() => refetch()}>

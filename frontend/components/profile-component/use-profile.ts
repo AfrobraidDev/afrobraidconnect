@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiController } from "@/lib/apiController";
 import { toast } from "sonner";
 import { useRouter } from "@/navigation";
-import { signOut, useSession } from "next-auth/react"; // 1. Import useSession
+import { signOut, useSession } from "next-auth/react";
 
 export interface UserProfile {
   first_name: string;
@@ -28,9 +28,8 @@ interface ChangePasswordPayload {
 export const useProfile = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { data: session, status } = useSession(); // 2. Get Session
+  const { data: session, status } = useSession();
 
-  // 3. GET PROFILE (Only run when we have a token)
   const {
     data: profile,
     isLoading,
@@ -42,22 +41,19 @@ export const useProfile = () => {
     queryFn: async () => {
       const token = session?.accessToken;
 
-      // Safety check, though 'enabled' handles this mostly
       if (!token) throw new Error("No access token found");
 
       const res = await apiController<{ data: UserProfile }>({
         method: "GET",
         url: "/auth/profile/",
         requiresAuth: true,
-        token: token, // 4. Pass token explicitly
+        token: token,
       });
       return res.data;
     },
-    // 5. Only run query if session is authenticated
     enabled: status === "authenticated",
   });
 
-  // 6. UPDATE PROFILE
   const updateProfile = useMutation({
     mutationFn: async (payload: UpdateProfilePayload) => {
       return apiController({
@@ -65,7 +61,7 @@ export const useProfile = () => {
         url: "/auth/profile/",
         data: payload,
         requiresAuth: true,
-        token: session?.accessToken, // Pass token
+        token: session?.accessToken,
       });
     },
     onSuccess: () => {
@@ -75,7 +71,6 @@ export const useProfile = () => {
     onError: (err: Error) => toast.error(err.message),
   });
 
-  // 7. CHANGE PASSWORD
   const changePassword = useMutation({
     mutationFn: async (payload: ChangePasswordPayload) => {
       return apiController({
@@ -92,7 +87,6 @@ export const useProfile = () => {
     onError: (err: Error) => toast.error(err.message),
   });
 
-  // 8. DEACTIVATE ACCOUNT
   const deactivateAccount = useMutation({
     mutationFn: async () => {
       return apiController({
@@ -110,7 +104,6 @@ export const useProfile = () => {
     onError: (err: Error) => toast.error(err.message),
   });
 
-  // 9. DELETE ACCOUNT
   const deleteAccount = useMutation({
     mutationFn: async () => {
       return apiController({
@@ -130,7 +123,6 @@ export const useProfile = () => {
 
   return {
     profile,
-    // Loading is true if query is loading OR session is still loading
     isLoading: isLoading || status === "loading",
     isError,
     error,
