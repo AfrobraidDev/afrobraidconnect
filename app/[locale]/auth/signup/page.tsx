@@ -116,7 +116,7 @@ export default function RegisterView() {
         </div>
         <div className="relative w-1/2 bg-gray-200 hidden md:block">
           <Image
-            src="/images/person1.png"
+            src="/images/person8.jpg"
             alt="Customer booking"
             fill
             priority
@@ -276,7 +276,7 @@ export default function RegisterView() {
 
       <div className="relative w-1/2 bg-gray-200 hidden md:block">
         <Image
-          src="/images/person1.png"
+          src="/images/person8.jpg"
           alt="Braiding service"
           fill
           priority
