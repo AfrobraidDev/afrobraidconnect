@@ -186,12 +186,12 @@ export function Navbar() {
                 variant="ghost"
                 className="w-full justify-start h-14 text-base cursor-pointer"
                 onClick={() => {
-                  router.push("/settings");
+                  router.push("/bookings");
                   setIsMenuOpen(false);
                 }}
               >
                 <Settings className="mr-3 h-5 w-5" />
-                Settings
+                Bookings
               </Button>
             </nav>
           </>
@@ -201,7 +201,7 @@ export function Navbar() {
               className="w-full h-14 bg-[#D0865A] hover:bg-[#BF764A] text-white cursor-pointer"
               asChild
             >
-              <Link href="/auth" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/auth/signup" onClick={() => setIsMenuOpen(false)}>
                 Sign Up Now
               </Link>
             </Button>
@@ -364,9 +364,9 @@ export function Navbar() {
                         <span>Profile</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href="/settings" className="cursor-pointer">
+                        <Link href="/bookings" className="cursor-pointer">
                           <Settings className="mr-2 h-4 w-4" />
-                          <span>Settings</span>
+                          <span>Bookings</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
@@ -391,7 +391,7 @@ export function Navbar() {
                     <>
                       <DropdownMenuItem asChild>
                         <Link
-                          href="/auth"
+                          href="/auth/signup"
                           className="cursor-pointer text-[#D0865A] hover:text-[#BF764A]"
                         >
                           <User className="mr-2 h-4 w-4" />

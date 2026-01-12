@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, FormEvent, useEffect } from "react";
-import { signIn, getSession } from "next-auth/react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import { Link, useRouter } from "@/navigation";
 import Image from "next/image";
 import { Lock, Mail } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
@@ -10,7 +11,6 @@ import Input from "@/components/generics/Input";
 import Button from "@/components/generics/Button";
 import { useTranslations } from "next-intl";
 import { LanguageSelector } from "@/components/language-selector";
-import { Link } from "@/navigation";
 
 export default function LoginView() {
   const t = useTranslations("Auth");
@@ -55,25 +55,8 @@ export default function LoginView() {
       setIsLoading(false);
       setError("Invalid email or password. Please try again.");
     } else if (result?.ok) {
-      const session = await getSession();
-      const user = session?.user;
-
-      if (user?.role === "BRAIDER") {
-        const profile = user.braiderProfile;
-        const isPhoneVerified = profile?.is_phone_verified === true;
-        const isDocVerified =
-          profile?.document_verification_status === "VERIFIED";
-        const isPayoutsEnabled = profile?.is_payouts_enabled === true;
-
-        if (isPhoneVerified && isDocVerified && isPayoutsEnabled) {
-          router.push(callbackUrl);
-        } else {
-          router.push(callbackUrl);
-        }
-      } else {
-        router.push(callbackUrl);
-      }
-      setIsLoading(false);
+      router.refresh();
+      router.push(callbackUrl);
     }
   };
 
@@ -87,7 +70,7 @@ export default function LoginView() {
           <p className="text-base text-gray-600 mb-8">{t("loginSubtitle")}</p>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-sm text-red-600">
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-sm text-red-600 animate-in fade-in slide-in-from-top-1">
               {error}
             </div>
           )}
@@ -161,7 +144,7 @@ export default function LoginView() {
           <p className="text-center text-sm text-gray-600 mt-8">
             {t("signUpPrompt")}{" "}
             <Link
-              href="/auth/signup"
+              href="/auth/register"
               className="text-[#b5734c] font-medium hover:underline ml-1"
             >
               {t("signUpLink")}
