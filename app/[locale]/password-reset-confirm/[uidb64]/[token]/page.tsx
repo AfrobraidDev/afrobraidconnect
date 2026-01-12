@@ -1,0 +1,191 @@
+"use client";
+
+import React, { useState, FormEvent } from "react";
+import Image from "next/image";
+import { Lock, CheckCircle2 } from "lucide-react";
+import Input from "@/components/generics/Input";
+import Button from "@/components/generics/Button";
+import { useTranslations } from "next-intl";
+import { LanguageSelector } from "@/components/language-selector";
+import { apiController } from "@/lib/apiController";
+import { useRouter } from "@/navigation";
+import { useParams } from "next/navigation";
+
+export default function PasswordResetConfirmView() {
+  const t = useTranslations("Auth");
+  const router = useRouter();
+
+  const params = useParams();
+  const uidb64 = params.uidb64 as string;
+  const token = params.token as string;
+
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    if (password !== confirmPassword) {
+      setError(t("errorPasswordsDoNotMatch"));
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      await apiController({
+        method: "PATCH",
+        url: "/auth/password-reset-complete/",
+        data: {
+          uidb64: uidb64,
+          token: token,
+          password: password,
+          password2: confirmPassword,
+        },
+      });
+
+      setIsSuccess(true);
+    } catch (err: unknown) {
+      console.error("Password Reset Error:", err);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(t("errorGeneric"));
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen flex bg-white">
+        <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-6 sm:p-10 lg:p-16 text-center">
+          <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6">
+            <CheckCircle2 className="w-10 h-10 text-green-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            {t("passwordResetSuccessTitle")}
+          </h1>
+          <p className="text-gray-600 max-w-md mb-8">
+            {t("passwordResetSuccessText")}
+          </p>
+          <div className="space-y-3 w-full max-w-sm">
+            <Button
+              variant="primary"
+              onClick={() => router.push("/auth/login")}
+              className="w-full"
+            >
+              {t("backToLogin")}
+            </Button>
+          </div>
+        </div>
+
+        <div className="relative w-1/2 bg-gray-200 hidden md:block">
+          <Image
+            src="/images/person22.png"
+            alt="Success"
+            fill
+            priority
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-black/10"></div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex bg-white">
+      <div className="w-full md:w-1/2 flex flex-col justify-between p-6 sm:p-10 lg:p-16">
+        <main className="flex-grow flex flex-col justify-center max-w-md mx-auto py-10 w-full">
+          <h1 className="text-2xl lg:text-3xl font-semibold text-gray-900 mb-2">
+            {t("resetPasswordTitle")}
+          </h1>
+          <p className="text-base text-gray-600 mb-8">
+            {t("resetPasswordSubtitle")}
+          </p>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-sm text-red-600 flex items-start gap-2 animate-in fade-in slide-in-from-top-1">
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="password" className="sr-only">
+                {t("newPasswordLabel")}
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-800">
+                  <Lock className="w-5 h-5 text-gray-400" />
+                </div>
+                <Input
+                  type="password"
+                  placeholder={t("newPasswordLabel")}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="confirmPassword" className="sr-only">
+                {t("confirmNewPasswordLabel")}
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-800">
+                  <Lock className="w-5 h-5 text-gray-400" />
+                </div>
+                <Input
+                  type="password"
+                  placeholder={t("confirmNewPasswordLabel")}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              isLoading={isLoading}
+              variant="primary"
+              className="w-full"
+            >
+              {isLoading ? t("resettingPassword") : t("resetPasswordButton")}
+            </Button>
+          </form>
+        </main>
+
+        <footer className="mt-12 flex justify-between items-center text-xs text-gray-500 relative">
+          <div className="flex items-center space-x-1">
+            <Lock className="w-4 h-4" />
+            <span>Secured by AfroBraids Connect</span>
+          </div>
+          <div className="relative">
+            <LanguageSelector />
+          </div>
+        </footer>
+      </div>
+
+      <div className="relative w-1/2 bg-gray-200 hidden md:block">
+        <Image
+          src="/images/person22.png"
+          alt="Reset Password"
+          fill
+          priority
+          className="object-cover"
+          sizes="(max-width: 768px) 0vw, 50vw"
+        />
+        <div className="absolute inset-0 bg-black/10"></div>
+      </div>
+    </div>
+  );
+}
