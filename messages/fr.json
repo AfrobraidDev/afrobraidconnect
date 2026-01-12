@@ -1,22 +1,46 @@
 {
   "HomePage": {
-    "recentlyViewed": "Consultés récemment",
-    "recommended": "Recommandés",
-    "trending": "Tendances",
+    "recentlyViewed": "Récemment consulté",
+    "recommended": "Recommandé",
+    "trending": "Tendance",
     "newToAfroBraid": "Nouveau sur AfroBraids"
   },
   "Metadata": {
-    "title": "AfroBraids Connect - Tresseurs à proximité, avis fiables."
+    "title": "AfroBraids Connect - Coiffeurs à proximité, avis fiables, prix justes."
   },
   "Auth": {
     "loginTitle": "Bon retour",
-    "loginSubtitle": "Veuillez entrer vos coordonnées pour vous connecter.",
+    "loginSubtitle": "Veuillez saisir vos coordonnées pour vous connecter.",
+    "registerTitle": "Créer un compte",
+    "registerSubtitle": "Rejoignez-nous pour réserver les meilleurs coiffeurs.",
+    "emailLabel": "Adresse e-mail",
+    "passwordLabel": "Mot de passe",
+    "confirmPasswordLabel": "Confirmer le mot de passe",
+    "firstNameLabel": "Prénom",
+    "firstNamePlaceholder": "Prénom",
+    "lastNameLabel": "Nom",
+    "lastNamePlaceholder": "Nom",
+    "emailPlaceholder": "bonjour@exemple.com",
+    "passwordPlaceholder": "Mot de passe",
+    "confirmPasswordPlaceholder": "Confirmer le mot de passe",
     "forgotPassword": "Mot de passe oublié ?",
     "signingIn": "Connexion en cours...",
     "signIn": "Se connecter",
+    "creatingAccount": "Création du compte...",
+    "signUp": "S'inscrire",
     "or": "ou",
     "googleSignIn": "Se connecter avec Google",
+    "googleSignUp": "S'inscrire avec Google",
     "signUpPrompt": "Vous n'avez pas de compte ?",
-    "signUpLink": "S'inscrire"
+    "signUpLink": "S'inscrire",
+    "signInPrompt": "Vous avez déjà un compte ?",
+    "signInLink": "Se connecter",
+    "revalidatePrompt": "Compte non vérifié ?",
+    "revalidateLink": "Revalider",
+    "verifyEmailTitle": "Vérifiez votre e-mail",
+    "verifyEmailText": "Nous avons envoyé un lien de vérification à <bold>{email}</bold>. Veuillez vérifier votre boîte de réception (et vos courriers indésirables) pour activer votre compte.",
+    "backToLogin": "Retour à la connexion",
+    "errorPasswordsDoNotMatch": "Les mots de passe ne correspondent pas.",
+    "errorGeneric": "L'inscription a échoué. Veuillez réessayer."
   }
 }

@@ -1,22 +1,46 @@
 {
   "HomePage": {
-    "recentlyViewed": "Kürzlich angesehen",
+    "recentlyViewed": "Zuletzt angesehen",
     "recommended": "Empfohlen",
     "trending": "Im Trend",
     "newToAfroBraid": "Neu bei AfroBraids"
   },
   "Metadata": {
-    "title": "AfroBraids Connect - Flechter in der Nähe, vertrauenswürdige Bewertungen."
+    "title": "AfroBraids Connect - Braider in deiner Nähe, vertrauenswürdige Bewertungen, faire Preise."
   },
   "Auth": {
     "loginTitle": "Willkommen zurück",
     "loginSubtitle": "Bitte geben Sie Ihre Daten ein, um sich anzumelden.",
+    "registerTitle": "Konto erstellen",
+    "registerSubtitle": "Treten Sie uns bei, um die besten Braider zu buchen.",
+    "emailLabel": "E-Mail-Adresse",
+    "passwordLabel": "Passwort",
+    "confirmPasswordLabel": "Passwort bestätigen",
+    "firstNameLabel": "Vorname",
+    "firstNamePlaceholder": "Vorname",
+    "lastNameLabel": "Nachname",
+    "lastNamePlaceholder": "Nachname",
+    "emailPlaceholder": "hallo@beispiel.de",
+    "passwordPlaceholder": "Passwort",
+    "confirmPasswordPlaceholder": "Passwort bestätigen",
     "forgotPassword": "Passwort vergessen?",
     "signingIn": "Anmelden...",
     "signIn": "Anmelden",
+    "creatingAccount": "Konto wird erstellt...",
+    "signUp": "Registrieren",
     "or": "oder",
     "googleSignIn": "Mit Google anmelden",
-    "signUpPrompt": "Sie haben noch kein Konto?",
-    "signUpLink": "Registrieren"
+    "googleSignUp": "Mit Google registrieren",
+    "signUpPrompt": "Haben Sie noch kein Konto?",
+    "signUpLink": "Registrieren",
+    "signInPrompt": "Haben Sie bereits ein Konto?",
+    "signInLink": "Anmelden",
+    "revalidatePrompt": "Konto noch nicht verifiziert?",
+    "revalidateLink": "Erneut validieren",
+    "verifyEmailTitle": "E-Mail verifizieren",
+    "verifyEmailText": "Wir haben einen Bestätigungslink an <bold>{email}</bold> gesendet. Bitte prüfen Sie Ihren Posteingang (und Spam-Ordner), um Ihr Konto zu aktivieren.",
+    "backToLogin": "Zurück zur Anmeldung",
+    "errorPasswordsDoNotMatch": "Passwörter stimmen nicht überein.",
+    "errorGeneric": "Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut."
   }
 }

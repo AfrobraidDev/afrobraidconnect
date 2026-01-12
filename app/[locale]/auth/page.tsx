@@ -1,7 +1,8 @@
 // app/auth/selection/page.tsx
-import Link from "next/link";
+
 import { ArrowRight } from "lucide-react";
 import AppLayout from "@/components/app-layout";
+import { Link } from "@/navigation";
 
 export default function AuthSelectionPage() {
   const options = [
@@ -9,15 +10,15 @@ export default function AuthSelectionPage() {
       title: "Afro-connect for customers",
       subtitle: "Sign up to book salons and spas near you",
       href: "/auth/signup?user_type=customer",
-      icon: <ArrowRight className="h-5 w-5 text-purple-600" />
+      icon: <ArrowRight className="h-5 w-5 text-purple-600" />,
     },
     {
       title: "Afro-connect for professionals",
       subtitle: "Sign up to manage and grow your business",
       href: "/auth/signup?user_type=braider",
-      icon: <ArrowRight className="h-5 w-5 text-purple-600" />
-    }
-  ]
+      icon: <ArrowRight className="h-5 w-5 text-purple-600" />,
+    },
+  ];
 
   return (
     <AppLayout>

@@ -1,7 +1,8 @@
-import { NextAuthOptions, User } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { apiController } from "@/lib/apiController";
+import { cookies } from "next/headers";
 
 interface BackendAuthResponse {
   id?: string;
@@ -10,7 +11,6 @@ interface BackendAuthResponse {
   last_name?: string;
   role?: "CUSTOMER" | "BRAIDER" | "ADMIN";
   braider_profile?: any | null;
-
   access_token?: string;
   refresh_token?: string;
   access?: string;
@@ -43,7 +43,6 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-
         try {
           const data = await apiController<BackendAuthResponse>({
             method: "POST",
@@ -77,15 +76,25 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
+        const cookieStore = await cookies();
+        const locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
+        const intent = cookieStore.get("auth_intent")?.value;
+
         try {
+          let endpoint = "/auth/google/login/";
+          let payload: any = { id_token: account.id_token };
+
+          if (intent === "signup") {
+            endpoint = "/auth/google/signup/";
+            payload.role = "CUSTOMER";
+          }
+
           const data = await apiController<BackendAuthResponse>({
             method: "POST",
-            url: "/auth/google/",
-            data: {
-              id_token: account.id_token,
-              role: "CUSTOMER",
-            },
+            url: endpoint,
+            data: payload,
           });
+
           const accessToken = data.access || data.access_token;
           const refreshToken = data.refresh || data.refresh_token;
 
@@ -95,15 +104,18 @@ export const authOptions: NextAuthOptions = {
             user.id = data.id || user.id;
             user.role = data.role || "CUSTOMER";
             user.braiderProfile = data.braider_profile || null;
-
             return true;
           }
 
-          console.error("Backend response missing access token:", data);
           return false;
-        } catch (error) {
-          console.error("Google Signin Exception:", error);
-          return false;
+        } catch (error: any) {
+          console.error("Google Signin Error:", error);
+
+          const backendMsg =
+            error?.error || error?.message || "Authentication failed";
+
+          const page = intent === "signup" ? "/auth/signup" : "/auth/login";
+          return `/${locale}${page}?error=${encodeURIComponent(backendMsg)}`;
         }
       }
       return true;

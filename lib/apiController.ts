@@ -14,6 +14,7 @@ interface BackendErrorResponse {
   detail?: string;
   status?: string;
   [key: string]: unknown;
+  error?: string;
 }
 
 export const apiController = async <T>({
@@ -61,6 +62,7 @@ export const apiController = async <T>({
       const rawMessage =
         errorData?.message ||
         errorData?.detail ||
+        errorData?.error ||
         (typeof errorData === "string" ? errorData : null) ||
         `Request failed with status ${status}`;
 

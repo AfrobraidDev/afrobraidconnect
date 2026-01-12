@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useEffect } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import { Lock, Mail } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import Input from "@/components/generics/Input";
 import Button from "@/components/generics/Button";
 import { useTranslations } from "next-intl";
 import { LanguageSelector } from "@/components/language-selector";
+import { Link } from "@/navigation";
 
 export default function LoginView() {
   const t = useTranslations("Auth");
@@ -18,6 +18,7 @@ export default function LoginView() {
   const searchParams = useSearchParams();
 
   const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const urlError = searchParams.get("error");
 
   const [password, setPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -25,9 +26,17 @@ export default function LoginView() {
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (urlError) {
+      setError(decodeURIComponent(urlError));
+    }
+  }, [urlError]);
+
   const handleGoogleSignIn = () => {
+    document.cookie = "auth_intent=login; path=/; max-age=300";
     signIn("google", {
       callbackUrl: callbackUrl,
+      redirect: true,
     });
   };
 
@@ -64,7 +73,6 @@ export default function LoginView() {
       } else {
         router.push(callbackUrl);
       }
-
       setIsLoading(false);
     }
   };
@@ -77,10 +85,17 @@ export default function LoginView() {
             {t("loginTitle")}
           </h1>
           <p className="text-base text-gray-600 mb-8">{t("loginSubtitle")}</p>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-sm text-red-600">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleCredentialsSignIn} className="space-y-4">
             <div>
               <label htmlFor="email" className="sr-only">
-                Email Address
+                {t("emailLabel")}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-sm font-semibold text-gray-800">
@@ -89,7 +104,7 @@ export default function LoginView() {
                 <Input
                   type="email"
                   icon={Mail}
-                  placeholder="hello@teni.com"
+                  placeholder={t("emailPlaceholder")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   error={emailError}
@@ -99,7 +114,7 @@ export default function LoginView() {
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
-                Password
+                {t("passwordLabel")}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-sm font-semibold text-gray-800">
@@ -108,7 +123,7 @@ export default function LoginView() {
                 <Input
                   type="password"
                   icon={Lock}
-                  placeholder="Password"
+                  placeholder={t("passwordPlaceholder")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -117,15 +132,13 @@ export default function LoginView() {
 
               <div className="flex justify-end mt-2 text-sm">
                 <Link
-                  href="/forgot-password"
+                  href="/auth/forgot-password"
                   className="font-medium text-[#b5734c] hover:underline"
                 >
                   {t("forgotPassword")}
                 </Link>
               </div>
             </div>
-
-            {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
 
             <Button type="submit" isLoading={isLoading} variant="primary">
               {isLoading ? t("signingIn") : t("signIn")}
@@ -148,7 +161,7 @@ export default function LoginView() {
           <p className="text-center text-sm text-gray-600 mt-8">
             {t("signUpPrompt")}{" "}
             <Link
-              href="/register"
+              href="/auth/signup"
               className="text-[#b5734c] font-medium hover:underline ml-1"
             >
               {t("signUpLink")}
@@ -156,12 +169,12 @@ export default function LoginView() {
           </p>
 
           <p className="text-center text-sm text-gray-600 mt-2">
-            Haven&apos;t verified my account?{" "}
+            {t("revalidatePrompt")}{" "}
             <Link
-              href="/resend-verification"
+              href="/auth/resend-verification"
               className="text-[#b5734c] font-medium hover:underline ml-1"
             >
-              Revalidate
+              {t("revalidateLink")}
             </Link>
           </p>
         </main>
