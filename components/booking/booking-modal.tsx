@@ -38,7 +38,7 @@ import { useSession } from "next-auth/react";
 import LoginModal from "../auth/login-modal";
 
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 );
 
 interface BookingModalProps {
@@ -97,7 +97,7 @@ export default function BookingModal({
     useInitiateBooking();
 
   const { data: wallet, isLoading: isWalletLoading } = useWalletBalance(
-    isOpen && step === "SCHEDULE" && !!session
+    isOpen && step === "SCHEDULE" && !!session,
   );
 
   const { data: availableSlots = [], isFetching: isSlotsFetching } = useQuery({
@@ -221,7 +221,7 @@ export default function BookingModal({
   const renderTimeGroup = (
     title: string,
     icon: React.ReactNode,
-    slots: string[]
+    slots: string[],
   ) => {
     return (
       <div className="mb-6 last:mb-0">
@@ -243,8 +243,8 @@ export default function BookingModal({
                     isSelected
                       ? "bg-[#D0865A] text-white border-[#D0865A] shadow-md scale-105 z-10 font-bold"
                       : isAvailable
-                      ? "bg-white text-gray-700 border-gray-200 hover:border-[#D0865A] hover:bg-[#D0865A]/5 hover:text-[#D0865A]"
-                      : "bg-red-50 text-red-400 border-red-100 cursor-not-allowed shadow-none"
+                        ? "bg-white text-gray-700 border-gray-200 hover:border-[#D0865A] hover:bg-[#D0865A]/5 hover:text-[#D0865A]"
+                        : "bg-red-50 text-red-400 border-red-100 cursor-not-allowed shadow-none"
                   }
                 `}
               >
@@ -336,8 +336,8 @@ export default function BookingModal({
                             if (selectedVariations.includes(variant.id)) {
                               setSelectedVariations(
                                 selectedVariations.filter(
-                                  (id) => id !== variant.id
-                                )
+                                  (id) => id !== variant.id,
+                                ),
                               );
                             } else {
                               setSelectedVariations([
@@ -512,17 +512,17 @@ export default function BookingModal({
                       {renderTimeGroup(
                         "Morning",
                         <Sun className="w-4 h-4 text-orange-400" />,
-                        timeGroups.morning
+                        timeGroups.morning,
                       )}
                       {renderTimeGroup(
                         "Afternoon",
                         <Sunset className="w-4 h-4 text-orange-500" />,
-                        timeGroups.afternoon
+                        timeGroups.afternoon,
                       )}
                       {renderTimeGroup(
                         "Evening",
                         <Moon className="w-4 h-4 text-indigo-400" />,
-                        timeGroups.evening
+                        timeGroups.evening,
                       )}
                     </div>
                   </div>
@@ -552,7 +552,8 @@ export default function BookingModal({
                           <span className="text-green-600 font-bold">
                             -
                             {formatPrice(
-                              paymentData.amountTotal - paymentData.amountStripe
+                              paymentData.amountTotal -
+                                paymentData.amountStripe,
                             )}
                           </span>
                         </div>

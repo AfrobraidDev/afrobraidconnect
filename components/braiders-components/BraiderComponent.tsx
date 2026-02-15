@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { useParams, useSearchParams } from "next/navigation";
+import { useRouter } from "@/navigation";
 import dynamic from "next/dynamic";
+import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
+import { useLocale } from "next-intl";
 import { apiController } from "@/lib/apiController";
 import { BraiderProfileData, Service, Location } from "./types/braider";
 import {
@@ -13,6 +17,7 @@ import {
   Clock,
   ArrowRight,
   BadgeCheck,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +28,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import BookingModal from "@/components/booking/booking-modal";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const BraiderMap = dynamic(
   () => import("@/components/braiders-components/braider-map"),
@@ -34,7 +45,7 @@ const BraiderMap = dynamic(
         Loading Map...
       </div>
     ),
-  }
+  },
 );
 
 function BraiderLogo({ url, alt }: { url: string; alt: string }) {
@@ -59,36 +70,50 @@ function BraiderLogo({ url, alt }: { url: string; alt: string }) {
 export default function BraiderProfilePage() {
   const params = useParams();
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const locale = useLocale();
   const dateParam = searchParams.get("date");
+  const { status } = useSession();
 
-  const [profile, setProfile] = useState<BraiderProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
   const [activeLocation, setActiveLocation] = useState<Location | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [pendingService, setPendingService] = useState<Service | null>(null);
 
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await apiController<{ data: BraiderProfileData }>({
-          method: "GET",
-          url: `/customers/braiders/${params.id}/`,
-        });
-        setProfile(res.data);
-      } catch (error) {
-        console.error("Failed to load profile", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (params.id) fetchProfile();
-  }, [params.id]);
+  const { data: profile, isLoading } = useQuery({
+    queryKey: ["braiderProfile", params.id],
+    queryFn: async () => {
+      const res = await apiController<{ data: BraiderProfileData }>({
+        method: "GET",
+        url: `/customers/braiders/${params.id}/`,
+      });
+      return res.data;
+    },
+    enabled: !!params.id,
+    staleTime: 5 * 60 * 1000,
+  });
 
   const handleBookService = (service: Service) => {
-    setSelectedService(service);
-    setIsBookingOpen(true);
+    if (status === "unauthenticated") {
+      setPendingService(service);
+      setShowAuthModal(true);
+      return;
+    }
+
+    let url = `/braider/${params.id}/book?serviceId=${service.id}`;
+    if (dateParam) url += `&date=${dateParam}`;
+    router.push(url);
+  };
+
+  const handleAuthRedirect = (type: "login" | "signup") => {
+    let targetUrl = `/${locale}/braider/${params.id}`;
+
+    if (pendingService) {
+      targetUrl += `/book?serviceId=${pendingService.id}`;
+      if (dateParam) targetUrl += `&date=${dateParam}`;
+    }
+
+    document.cookie = `auth_intent=${type}; path=/; max-age=300`;
+    router.push(`/auth/${type}?callbackUrl=${encodeURIComponent(targetUrl)}`);
   };
 
   const scrollToServices = () => {
@@ -98,13 +123,12 @@ export default function BraiderProfilePage() {
     }
   };
 
-  if (loading) return <div className="p-20 text-center">Loading...</div>;
+  if (isLoading) return <div className="p-20 text-center">Loading...</div>;
   if (!profile)
     return <div className="p-20 text-center">Profile not found</div>;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header / Hero Section */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <div className="flex flex-col md:flex-row gap-6 items-start">
@@ -292,21 +316,44 @@ export default function BraiderProfilePage() {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 md:hidden z-40 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <Button
           onClick={scrollToServices}
-          className="w-full bg-[#D0865A] hover:bg-[#bf764a] text-white h-12 rounded-xl text-lg font-semibold cursor-pointer"
+          className="w-full bg-[#D0865A] hover:bg-[#bf764a] text-white h-12 text-lg font-semibold cursor-pointer"
         >
           Book Appointment
         </Button>
       </div>
 
-      {selectedService && (
-        <BookingModal
-          isOpen={isBookingOpen}
-          onClose={() => setIsBookingOpen(false)}
-          braiderId={profile.id}
-          service={selectedService}
-          initialDate={dateParam}
-        />
-      )}
+      {/* Authentication Required Modal */}
+      <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
+        <DialogContent className="sm:max-w-md bg-white rounded-2xl p-6 text-center border-gray-100 shadow-xl">
+          <div className="mx-auto w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mb-2">
+            <Lock className="w-8 h-8 text-[#D0865A]" />
+          </div>
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-gray-900 text-center">
+              Sign in to Book
+            </DialogTitle>
+            <DialogDescription className="text-center text-gray-500 mt-2 text-base">
+              You need an account to schedule an appointment. Please log in or
+              create a new account to continue.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 mt-6">
+            <Button
+              onClick={() => handleAuthRedirect("login")}
+              className="w-full h-12 bg-[#D0865A] hover:bg-[#bf764a] text-white text-base font-semibold transition-colors"
+            >
+              Log In
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => handleAuthRedirect("signup")}
+              className="w-full h-12 text-base font-semibold border-gray-200 hover:bg-gray-50 text-gray-900 transition-colors"
+            >
+              Create Account
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
