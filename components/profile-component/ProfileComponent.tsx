@@ -39,14 +39,6 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "@/navigation";
 
-const formatEuro = (amount: string | number) => {
-  const num = typeof amount === "string" ? parseFloat(amount) : amount;
-  return new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-  }).format(num || 0);
-};
-
 export default function ProfilePage() {
   const router = useRouter();
   const {

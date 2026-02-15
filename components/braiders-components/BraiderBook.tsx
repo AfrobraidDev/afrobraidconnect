@@ -78,7 +78,7 @@ export default function BraiderBook() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { data: session, status: sessionStatus } = useSession();
+  const { status: sessionStatus } = useSession();
 
   const braiderId = params.id as string;
   const serviceId = searchParams.get("serviceId");

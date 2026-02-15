@@ -38,6 +38,24 @@ export interface PaginatedResponse {
   results: Booking[];
 }
 
+export interface BookingListAPIResponse extends Partial<PaginatedResponse> {
+  status?: string;
+  message?: string;
+  data?:
+    | PaginatedResponse
+    | {
+        status?: string;
+        message?: string;
+        data?: PaginatedResponse;
+      };
+}
+
+export interface SingleBookingAPIResponse extends Partial<Booking> {
+  status?: string;
+  message?: string;
+  data?: Booking;
+}
+
 export const useBookings = (page: number = 1, pageSize: number = 10) => {
   const { data: session, status } = useSession();
 
@@ -47,7 +65,7 @@ export const useBookings = (page: number = 1, pageSize: number = 10) => {
       const token = session?.accessToken;
       if (!token) throw new Error("No access token found");
 
-      const res = await apiController<any>({
+      const res = await apiController<BookingListAPIResponse>({
         method: "GET",
         url: `/bookings/?page=${page}&page_size=${pageSize}`,
         requiresAuth: true,
@@ -61,12 +79,12 @@ export const useBookings = (page: number = 1, pageSize: number = 10) => {
         results: [],
       };
 
-      if (res?.data?.data?.results) {
+      if (res.data && "data" in res.data && res.data.data?.results) {
         payload = res.data.data;
-      } else if (res?.data?.results) {
-        payload = res.data;
-      } else if (res?.results) {
-        payload = res;
+      } else if (res.data && "results" in res.data) {
+        payload = res.data as PaginatedResponse;
+      } else if (res.results) {
+        payload = res as PaginatedResponse;
       }
 
       return payload;
@@ -90,7 +108,7 @@ export const useBookingDetails = (id: string | null) => {
       const token = session?.accessToken;
       if (!id || !token) throw new Error("Missing ID or token");
 
-      const res = await apiController<any>({
+      const res = await apiController<SingleBookingAPIResponse>({
         method: "GET",
         url: `/bookings/${id}/`,
         requiresAuth: true,
@@ -99,10 +117,10 @@ export const useBookingDetails = (id: string | null) => {
 
       let payload: Booking;
 
-      if (res && res.id && res.service_name) {
+      if (res.id && res.service_name) {
         payload = res as Booking;
-      } else if (res?.data && res.data.id) {
-        payload = res.data as Booking;
+      } else if (res.data && res.data.id) {
+        payload = res.data;
       } else {
         throw new Error("Invalid booking data received");
       }
