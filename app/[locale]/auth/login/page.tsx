@@ -144,7 +144,7 @@ export default function LoginView() {
           <p className="text-center text-sm text-gray-600 mt-8">
             {t("signUpPrompt")}{" "}
             <Link
-              href="/auth/register"
+              href="/auth/signup"
               className="text-[#b5734c] font-medium hover:underline ml-1"
             >
               {t("signUpLink")}

@@ -54,7 +54,7 @@ export default function SitemapPage() {
             {/* User Account */}
             <Section title="User Account">
               <SitemapLink href="/auth/login">Login</SitemapLink>
-              <SitemapLink href="/auth/register">Register</SitemapLink>
+              <SitemapLink href="/auth/signup">Register</SitemapLink>
               <SitemapLink href="/account/dashboard">Dashboard</SitemapLink>
               <SitemapLink href="/account/bookings">My Bookings</SitemapLink>
               <SitemapLink href="/account/settings">Settings</SitemapLink>
