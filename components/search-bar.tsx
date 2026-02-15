@@ -99,7 +99,7 @@ export function SearchBar({
           navigator.geolocation.getCurrentPosition(
             (position) => {
               const { latitude, longitude } = position.coords;
-              setSelectedLocation("Current Location");
+              setSelectedLocation("Berlin, Germany");
               setCoordinates({ lat: latitude, lng: longitude });
             },
             (error) => {
