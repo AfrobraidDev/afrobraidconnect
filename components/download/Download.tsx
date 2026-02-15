@@ -88,7 +88,7 @@ export default function DownloadPage() {
                 <div className="flex items-center gap-3 bg-green-50 text-green-700 p-4 rounded-xl border border-green-100 animate-in fade-in slide-in-from-bottom-2">
                   <CheckCircle2 className="w-5 h-5" />
                   <p className="text-sm font-medium">
-                    You're on the list! We'll email you soon.
+                    You&apos;re on the list! We&apos;ll email you soon.
                   </p>
                 </div>
               ) : (

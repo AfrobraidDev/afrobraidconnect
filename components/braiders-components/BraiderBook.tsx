@@ -134,14 +134,6 @@ export default function BraiderBook() {
     }
   }, [step, storageKey]);
 
-  const clearBookingSession = () => {
-    sessionStorage.removeItem(`${storageKey}_step`);
-    sessionStorage.removeItem(`${storageKey}_vars`);
-    sessionStorage.removeItem(`${storageKey}_date`);
-    sessionStorage.removeItem(`${storageKey}_time`);
-    sessionStorage.removeItem(`${storageKey}_wallet`);
-  };
-
   const selectedDate = useMemo(() => {
     const d = new Date(selectedDateStr);
     return isNaN(d.getTime()) ? new Date() : d;
@@ -167,7 +159,7 @@ export default function BraiderBook() {
 
   const { mutate: initiateBooking, isPending: isBookingLoading } =
     useInitiateBooking();
-  const { data: wallet, isLoading: isWalletLoading } = useWalletBalance(
+  const { data: wallet /* isLoading: isWalletLoading  */ } = useWalletBalance(
     step === "SCHEDULE" && !!session,
   );
 

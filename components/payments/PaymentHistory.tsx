@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Loader2,
   ArrowRight,
-  X,
 } from "lucide-react";
 import { useBookings, useBookingDetails } from "./use-bookings";
 import { Badge } from "@/components/ui/badge";
