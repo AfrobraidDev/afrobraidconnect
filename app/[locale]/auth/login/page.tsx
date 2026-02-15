@@ -4,6 +4,7 @@ import React, { useState, FormEvent, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Link, useRouter } from "@/navigation";
+import { useRouter as useStandardRouter } from "next/navigation";
 import Image from "next/image";
 import { Lock, Mail } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
@@ -16,6 +17,7 @@ export default function LoginView() {
   const t = useTranslations("Auth");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const standardRouter = useStandardRouter();
 
   const callbackUrl = searchParams.get("callbackUrl") || "/";
   const urlError = searchParams.get("error");
@@ -56,7 +58,8 @@ export default function LoginView() {
       setError("Invalid email or password. Please try again.");
     } else if (result?.ok) {
       router.refresh();
-      router.push(callbackUrl);
+      // router.push(callbackUrl);
+      standardRouter.push(callbackUrl);
     }
   };
 
