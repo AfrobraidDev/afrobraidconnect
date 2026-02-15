@@ -514,7 +514,7 @@ export default function BraiderBook() {
                   at <strong className="text-gray-900">{selectedTime}</strong>.
                 </p>
                 <Button
-                  onClick={() => router.push("/dashboard")}
+                  onClick={() => router.push("/bookings")}
                   className="w-full max-w-sm h-14 bg-gray-900 hover:bg-black text-white rounded-xl text-lg font-medium"
                 >
                   View My Bookings

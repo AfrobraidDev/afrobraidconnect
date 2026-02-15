@@ -15,6 +15,8 @@ import LocationPicker from "./location-picker";
 import { useRouter, useParams } from "next/navigation";
 import SearchValidationModal from "@/components/search-validation-modal";
 
+const LOCATION_STORAGE_KEY = "afrobraids_saved_location";
+
 interface SearchBarProps {
   initialQuery?: string;
   initialLocationName?: string;
@@ -42,11 +44,11 @@ export function SearchBar({
     lat: number;
     lng: number;
   } | null>(
-    initialLat && initialLng ? { lat: initialLat, lng: initialLng } : null
+    initialLat && initialLng ? { lat: initialLat, lng: initialLng } : null,
   );
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    initialDate ? parseISO(initialDate) : undefined
+    initialDate ? parseISO(initialDate) : undefined,
   );
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -56,16 +58,53 @@ export function SearchBar({
 
   useEffect(() => {
     if (initialQuery) setSearchQuery(initialQuery);
-    if (initialLocationName) setSelectedLocation(initialLocationName);
-    if (initialLat && initialLng)
-      setCoordinates({ lat: initialLat, lng: initialLng });
     if (initialDate) setSelectedDate(parseISO(initialDate));
+
+    if (initialLocationName && initialLat && initialLng) {
+      setSelectedLocation(initialLocationName);
+      setCoordinates({ lat: initialLat, lng: initialLng });
+
+      localStorage.setItem(
+        LOCATION_STORAGE_KEY,
+        JSON.stringify({
+          locationName: initialLocationName,
+          lat: initialLat,
+          lng: initialLng,
+        }),
+      );
+    } else {
+      const savedLocationStr = localStorage.getItem(LOCATION_STORAGE_KEY);
+      if (savedLocationStr) {
+        try {
+          const saved = JSON.parse(savedLocationStr);
+          if (saved.locationName && saved.lat && saved.lng) {
+            setSelectedLocation(saved.locationName);
+            setCoordinates({ lat: saved.lat, lng: saved.lng });
+          }
+        } catch (e) {
+          console.error("Failed to parse saved location", e);
+        }
+      }
+    }
   }, [initialQuery, initialLocationName, initialLat, initialLng, initialDate]);
+
+  useEffect(() => {
+    if (selectedLocation && coordinates?.lat && coordinates?.lng) {
+      localStorage.setItem(
+        LOCATION_STORAGE_KEY,
+        JSON.stringify({
+          locationName: selectedLocation,
+          lat: coordinates.lat,
+          lng: coordinates.lng,
+        }),
+      );
+    }
+  }, [selectedLocation, coordinates]);
 
   const handleSearch = () => {
     if (!coordinates || !coordinates.lat || !coordinates.lng) {
       setErrorMessage(
-        "Please select a valid location from the list or use your current location."
+        "Please select a valid location from the list or use your current location.",
       );
       setErrorModalOpen(true);
       return;
