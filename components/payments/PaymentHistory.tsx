@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Activity,
+  MessageCircle,
 } from "lucide-react";
 import { useBookings, useBookingDetails } from "./use-bookings";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +25,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import ChatView from "./ChatView";
 
 const formatPrice = (amount: string | number) => {
   return new Intl.NumberFormat("en-IE", {
@@ -51,6 +53,11 @@ export default function MyBookings() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const { status } = useSession();
+
+  const [chatSession, setChatSession] = useState<{
+    bookingId: string;
+    braiderName: string;
+  } | null>(null);
 
   const { data, isLoading, isError, isFetching } = useBookings(page, pageSize);
 
@@ -187,7 +194,7 @@ export default function MyBookings() {
                   </div>
                 </div>
 
-                <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 sm:border-l border-gray-100 pt-4 sm:pt-0 sm:pl-6 min-w-[140px]">
+                <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 sm:border-l border-gray-100 pt-4 sm:pt-0 sm:pl-6 min-w-[150px]">
                   <div className="text-sm text-gray-500 sm:text-right w-full">
                     {booking.is_fully_paid ? (
                       <div className="flex items-center sm:justify-end gap-1 text-green-600 font-medium mb-1">
@@ -206,12 +213,29 @@ export default function MyBookings() {
                       {booking.braider_name}
                     </span>
                   </div>
-                  <Button
-                    variant="ghost"
-                    className="h-8 w-8 p-0 rounded-full group-hover:bg-[#D0865A]/10 group-hover:text-[#D0865A] transition-colors mt-2 hidden sm:flex"
-                  >
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
+
+                  <div className="flex items-center gap-2 mt-3">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="h-8 rounded-full bg-orange-50 text-[#D0865A] hover:bg-orange-100 px-3 shadow-none border-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setChatSession({
+                          bookingId: booking.id,
+                          braiderName: booking.braider_name,
+                        });
+                      }}
+                    >
+                      <MessageCircle className="w-3.5 h-3.5 mr-1.5" /> Message
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="h-8 w-8 p-0 rounded-full group-hover:bg-[#D0865A]/10 group-hover:text-[#D0865A] transition-colors hidden sm:flex"
+                    >
+                      <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -315,7 +339,6 @@ export default function MyBookings() {
                   </div>
                 </div>
 
-                {/* Variations Breakdown */}
                 {bookingDetails.variations &&
                   bookingDetails.variations.length > 0 && (
                     <div className="border-t border-gray-100 pt-4 space-y-2">
@@ -336,7 +359,6 @@ export default function MyBookings() {
                     </div>
                   )}
 
-                {/* Payment Breakdown */}
                 <div className="border-t border-gray-100 pt-4 space-y-3">
                   <h4 className="text-sm font-semibold text-gray-900 mb-1">
                     Payment Summary
@@ -371,11 +393,29 @@ export default function MyBookings() {
                   )}
                 </div>
 
-                {bookingDetails.status === "PENDING" && (
-                  <Button variant="destructive" className="w-full rounded-xl">
-                    Cancel Appointment
+                <div className="pt-2 flex flex-col gap-3">
+                  <Button
+                    className="w-full rounded-xl h-12 bg-[#D0865A] hover:bg-[#bf764a] text-white shadow-md text-base"
+                    onClick={() => {
+                      setChatSession({
+                        bookingId: bookingDetails.id,
+                        braiderName: bookingDetails.braider_name,
+                      });
+                      setSelectedBookingId(null);
+                    }}
+                  >
+                    <MessageCircle className="w-5 h-5 mr-2" /> Message Braider
                   </Button>
-                )}
+
+                  {bookingDetails.status === "PENDING" && (
+                    <Button
+                      variant="outline"
+                      className="w-full rounded-xl text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                    >
+                      Cancel Appointment
+                    </Button>
+                  )}
+                </div>
               </div>
             ) : (
               <p className="text-center text-gray-500 py-6">
@@ -385,6 +425,14 @@ export default function MyBookings() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {chatSession && (
+        <ChatView
+          bookingId={chatSession.bookingId}
+          braiderName={chatSession.braiderName}
+          onClose={() => setChatSession(null)}
+        />
+      )}
     </div>
   );
 }
