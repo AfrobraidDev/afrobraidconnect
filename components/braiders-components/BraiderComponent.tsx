@@ -35,6 +35,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import BraiderReviews from "./braider-reviews";
 
 const BraiderMap = dynamic(
   () => import("@/components/braiders-components/braider-map"),
@@ -232,6 +233,8 @@ export default function BraiderProfilePage() {
                 ))}
               </div>
             </section>
+
+            <BraiderReviews braiderId={params.id as string} />
           </div>
 
           <div className="space-y-6 order-1 lg:order-2">
