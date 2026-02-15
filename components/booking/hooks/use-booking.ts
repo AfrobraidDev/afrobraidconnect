@@ -6,7 +6,6 @@ interface InitiateBookingPayload {
   service_id: string;
   variation_ids: string[];
   start_time: string;
-  use_wallet: boolean;
 }
 
 interface InitiateBookingResponse {
@@ -16,8 +15,8 @@ interface InitiateBookingResponse {
     booking_id: string;
     client_secret?: string;
     amount_total: number;
-    amount_stripe: number;
-    amount_wallet: number;
+    deposit_due_now: number;
+    remaining_due_later: number;
     expires_in: string;
   };
 }

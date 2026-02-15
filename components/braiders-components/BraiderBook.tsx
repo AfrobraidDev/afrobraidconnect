@@ -8,11 +8,10 @@ import { useSession } from "next-auth/react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
 import {
   Loader2,
   ChevronLeft,
-  Wallet,
+  Info,
   Sun,
   Sunset,
   Moon,
@@ -26,7 +25,6 @@ import { Elements } from "@stripe/react-stripe-js";
 import PaymentForm from "@/components/booking/payment-form";
 import { BraiderProfileData } from "@/components/braiders-components/types/braider";
 import { useInitiateBooking } from "@/components/booking/hooks/use-booking";
-import { useWalletBalance } from "@/components/booking/hooks/use-wallet";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
@@ -119,10 +117,6 @@ export default function BraiderBook() {
     `${storageKey}_time`,
     null,
   );
-  const [useWallet, setUseWallet] = useSessionStorage<boolean>(
-    `${storageKey}_wallet`,
-    false,
-  );
 
   useEffect(() => {
     if (step === "SUCCESS") {
@@ -130,7 +124,6 @@ export default function BraiderBook() {
       sessionStorage.removeItem(`${storageKey}_vars`);
       sessionStorage.removeItem(`${storageKey}_date`);
       sessionStorage.removeItem(`${storageKey}_time`);
-      sessionStorage.removeItem(`${storageKey}_wallet`);
     }
   }, [step, storageKey]);
 
@@ -159,9 +152,6 @@ export default function BraiderBook() {
 
   const { mutate: initiateBooking, isPending: isBookingLoading } =
     useInitiateBooking();
-  const { data: wallet /* isLoading: isWalletLoading  */ } = useWalletBalance(
-    step === "SCHEDULE" && !!session,
-  );
 
   const { data: availableSlots = [], isFetching: isSlotsFetching } = useQuery({
     queryKey: ["availability", braiderId, format(selectedDate, "yyyy-MM-dd")],
@@ -206,10 +196,24 @@ export default function BraiderBook() {
     return total;
   }, [service, selectedVariations]);
 
-  const amountToPay = useMemo(() => {
-    if (!useWallet || !wallet) return totalCost;
-    return Math.max(0, totalCost - wallet.balance);
-  }, [totalCost, useWallet, wallet]);
+  // Derived Calculations for Deposit / 24-hour rule
+  const bookingDateTime = useMemo(() => {
+    if (!selectedTime) return null;
+    const dateStr = format(selectedDate, "yyyy-MM-dd");
+    return new Date(`${dateStr}T${selectedTime}:00`);
+  }, [selectedDate, selectedTime]);
+
+  const isWithin24Hours = useMemo(() => {
+    if (!bookingDateTime) return false;
+    return bookingDateTime.getTime() - Date.now() < 24 * 60 * 60 * 1000;
+  }, [bookingDateTime]);
+
+  const depositAmount = useMemo(() => {
+    if (isWithin24Hours) return totalCost;
+    return totalCost * 0.2; // 20%
+  }, [totalCost, isWithin24Hours]);
+
+  const dueLaterAmount = totalCost - depositAmount;
 
   const handleNext = () => {
     if (step === "CUSTOMIZE") {
@@ -235,17 +239,16 @@ export default function BraiderBook() {
           service_id: service!.id,
           variation_ids: selectedVariations,
           start_time: startTimeISO,
-          use_wallet: useWallet,
         },
         {
           onSuccess: (response) => {
             const data = response.data;
-            if (data.amount_stripe === 0) {
+            if (data.deposit_due_now === 0) {
               setStep("SUCCESS");
             } else if (data.client_secret) {
               setPaymentData({
                 clientSecret: data.client_secret,
-                amountStripe: data.amount_stripe,
+                amountStripe: data.deposit_due_now,
                 amountTotal: data.amount_total,
               });
               setStep("PAYMENT");
@@ -282,7 +285,6 @@ export default function BraiderBook() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 lg:pb-12">
-      {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-4">
           {step !== "SUCCESS" && (
@@ -315,7 +317,6 @@ export default function BraiderBook() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Main Content Area */}
           <div className="lg:col-span-7 xl:col-span-8">
             {step === "CUSTOMIZE" && (
               <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -515,7 +516,7 @@ export default function BraiderBook() {
             )}
           </div>
 
-          {/* Sticky Summary Cart (Hidden on Success) */}
+          {/* Sticky Summary Cart */}
           {step !== "SUCCESS" && (
             <div className="lg:col-span-5 xl:col-span-4 relative">
               <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 sticky top-24">
@@ -559,46 +560,62 @@ export default function BraiderBook() {
                   </div>
                 )}
 
-                {session && step !== "CUSTOMIZE" && (
-                  <div className="mb-6 py-4 border-t border-b border-gray-100">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Wallet className="w-5 h-5 text-gray-400" />
-                        <div>
-                          <p className="text-sm font-semibold text-gray-900">
-                            Pay with Wallet
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            Balance:{" "}
-                            <span className="font-bold">
-                              {wallet?.formatted || "€0.00"}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
-                      <Switch
-                        checked={useWallet}
-                        onCheckedChange={setUseWallet}
-                        disabled={!wallet || wallet.balance <= 0}
-                        className="data-[state=checked]:bg-[#D0865A]"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex justify-between items-end pt-4 border-t border-gray-100 mb-6">
-                  <span className="text-gray-600 font-medium">Total (EUR)</span>
-                  <div className="text-right">
-                    {useWallet &&
-                      wallet &&
-                      wallet.balance > 0 &&
-                      amountToPay < totalCost && (
-                        <span className="text-sm text-gray-400 line-through mr-2 font-medium">
-                          {formatPrice(totalCost)}
+                {/* Payment Breakdown & Deposit Notice */}
+                <div className="mb-6 p-4 bg-[#D0865A]/5 rounded-xl border border-[#D0865A]/20 flex gap-3 text-gray-700 text-sm leading-relaxed">
+                  <Info className="w-5 h-5 shrink-0 text-[#D0865A] mt-0.5" />
+                  <div>
+                    {!selectedTime ? (
+                      <p>
+                        A <strong>20% non-refundable deposit</strong> is
+                        required to secure your booking. The remaining 80% is
+                        charged 24 hours prior. <br />
+                        <br />
+                        <span className="text-xs text-gray-500 italic">
+                          Note: Appointments within 24 hours require full
+                          payment upfront.
                         </span>
-                      )}
-                    <span className="text-3xl font-bold text-gray-900 tracking-tight">
-                      {formatPrice(amountToPay)}
+                      </p>
+                    ) : isWithin24Hours ? (
+                      <p>
+                        Because your appointment is{" "}
+                        <strong>less than 24 hours away</strong>, the full
+                        non-refundable payment is required now to secure your
+                        booking.
+                      </p>
+                    ) : (
+                      <p>
+                        You will pay a{" "}
+                        <strong>20% non-refundable deposit</strong> today. The
+                        remaining 80% will be automatically charged 24 hours
+                        before your appointment unless cancelled.
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-4 border-t border-gray-100 mb-6">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600 font-medium">
+                      Total Cost
+                    </span>
+                    <span className="text-gray-900 font-medium">
+                      {formatPrice(totalCost)}
+                    </span>
+                  </div>
+
+                  {selectedTime && !isWithin24Hours && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-500">Due Later</span>
+                      <span className="text-gray-500">
+                        {formatPrice(dueLaterAmount)}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-end pt-3 border-t border-gray-50">
+                    <span className="text-gray-900 font-bold">Due Now</span>
+                    <span className="text-3xl font-bold text-[#D0865A] tracking-tight">
+                      {formatPrice(depositAmount)}
                     </span>
                   </div>
                 </div>
@@ -630,13 +647,29 @@ export default function BraiderBook() {
         </div>
       </div>
 
+      {/* Mobile Sticky Bottom Bar */}
       {step !== "SUCCESS" && step !== "PAYMENT" && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 lg:hidden z-40 pb-safe shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-gray-500 font-medium text-sm">Total</span>
-            <span className="text-xl font-bold text-gray-900">
-              {formatPrice(amountToPay)}
-            </span>
+            <div className="flex flex-col">
+              <span className="text-gray-500 font-medium text-xs uppercase tracking-wider">
+                Due Now
+              </span>
+              <span className="text-xl font-bold text-gray-900">
+                {formatPrice(depositAmount)}
+              </span>
+            </div>
+
+            {selectedTime && !isWithin24Hours && (
+              <div className="text-right">
+                <span className="text-gray-400 font-medium text-xs block">
+                  Due Later
+                </span>
+                <span className="text-sm font-semibold text-gray-600">
+                  {formatPrice(dueLaterAmount)}
+                </span>
+              </div>
+            )}
           </div>
           <Button
             onClick={handleNext}
