@@ -15,6 +15,7 @@ type ReviewCardProps = {
   avatar: string;
   name: string;
   bgColor: string;
+  isActive?: boolean;
 };
 
 const ReviewCard: React.FC<ReviewCardProps> = ({
@@ -24,6 +25,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
   avatar,
   name,
   bgColor,
+  isActive = false,
 }) => {
   const isLight = bgColor.includes("#FAF3EF");
 
@@ -32,36 +34,51 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
   const starColor = isLight ? "text-[#D0865A]" : "text-[#FAF3EF]";
 
   return (
-    <div className={`rounded-xl p-6 flex flex-col justify-between h-full ${bgColor}`}>
-      <span
-        className={`text-xs font-semibold px-3 py-1 rounded-full inline-block mb-4 w-max ${badgeBg} ${badgeText}`}
-      >
-        {role}
-      </span>
+    <div
+      className={`
+        w-full rounded-xl p-6 flex flex-col justify-between transition-all duration-500 ease-in-out
+        ${bgColor}
+        ${
+          isActive
+            ? "h-full shadow-2xl opacity-100 scale-100"
+            : "h-[80%] opacity-50 scale-[0.92]"
+        }
+      `}
+    >
+      <div>
+        <span
+          className={`text-xs font-semibold px-3 py-1 rounded-full inline-block mb-4 w-max ${badgeBg} ${badgeText}`}
+        >
+          {role}
+        </span>
 
-      <div className="flex items-center mb-4">
-        {Array.from({ length: 5 }).map((_, idx) => (
-          <IoStar
-            key={idx}
-            className={`h-5 w-5 ${idx < rating ? starColor : "text-white/40"}`}
-          />
-        ))}
+        <div className="flex items-center mb-4">
+          {Array.from({ length: 5 }).map((_, idx) => (
+            <IoStar
+              key={idx}
+              className={`h-5 w-5 ${idx < rating ? starColor : "text-white/40"}`}
+            />
+          ))}
+        </div>
+
+        <p
+          className={`mb-6 text-sm md:text-base leading-relaxed ${
+            isLight ? "text-black" : "text-white"
+          } ${isActive ? "line-clamp-none" : "line-clamp-4"}`}
+        >
+          {comment}
+        </p>
       </div>
 
-      <p className={`mb-6 text-sm md:text-base leading-relaxed ${isLight ? "text-black" : "text-white"}`}>
-        {comment}
-      </p>
-
-      <div className="flex items-center space-x-3">
-        <div className="w-12 h-12 relative rounded-full overflow-hidden">
-          <Image
-            src={avatar}
-            alt={name}
-            fill
-            className="object-cover"
-          />
+      <div className="flex items-center space-x-3 mt-auto pt-4">
+        <div className="w-12 h-12 relative rounded-full overflow-hidden shrink-0">
+          <Image src={avatar} alt={name} fill className="object-cover" />
         </div>
-        <span className={`${isLight ? "text-black" : "text-white"} font-semibold`}>{name}</span>
+        <span
+          className={`${isLight ? "text-black" : "text-white"} font-semibold`}
+        >
+          {name}
+        </span>
       </div>
     </div>
   );
@@ -70,7 +87,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
 const ReviewsSection = () => {
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
 
-  const reviews: ReviewCardProps[] = [
+  const reviews: Omit<ReviewCardProps, "isActive">[] = [
     {
       role: "Customer",
       rating: 5,
@@ -92,7 +109,8 @@ const ReviewsSection = () => {
     {
       role: "Customer",
       rating: 5,
-      comment: "Quick, easy, and professional! My braids have never looked better.",
+      comment:
+        "Quick, easy, and professional! My braids have never looked better.",
       avatar: "/images/avatar1.jpg",
       name: "Chika I.",
       bgColor: "bg-[#FAF3EF]",
@@ -100,8 +118,9 @@ const ReviewsSection = () => {
     {
       role: "Customer",
       rating: 4,
-      comment: "Superb platform. I got more clients this month than ever before!",
-      avatar: "/images/avatar3.png",
+      comment:
+        "Superb platform. I got more clients this month than ever before!",
+      avatar: "/images/avatar2.png",
       name: "Yemi A.",
       bgColor: "bg-[#D0865A]",
     },
@@ -113,10 +132,18 @@ const ReviewsSection = () => {
       name: "Ngozi K.",
       bgColor: "bg-[#FAF3EF]",
     },
+    {
+      role: "Braider",
+      rating: 2.5,
+      comment: "AfroBraid makes booking so simple and fast for my clients!",
+      avatar: "/images/avatar2.png",
+      name: "James Kein",
+      bgColor: "bg-[#D0865A]",
+    },
   ];
 
   return (
-    <section className="py-20 px-4">
+    <section className="py-20 px-4 overflow-hidden">
       <div className="max-w-3xl mb-12 text-left px-4 sm:px-6 lg:ml-80">
         <span className="inline-block bg-[#FAF3EF] text-[#e25c0e] font-bold px-6 py-2 rounded-full mb-4 border-[1px] border-[#e27b40]">
           Reviews
@@ -129,36 +156,44 @@ const ReviewsSection = () => {
         </p>
       </div>
 
-      <div className="relative max-w-6xl mx-auto">
+      <div className="relative max-w-6xl mx-auto px-4 lg:px-12">
         <button
           onClick={() => swiperInstance?.slidePrev()}
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-30 bg-[#D0865A] text-white p-3 rounded-full shadow-lg hover:opacity-90 transition flex items-center justify-center cursor-pointer"
+          className="absolute left-0 md:-left-4 top-1/2 -translate-y-1/2 z-30 bg-[#D0865A] text-white p-3 rounded-full shadow-lg hover:opacity-90 transition flex items-center justify-center cursor-pointer"
         >
           <FaArrowLeft className="w-4 h-4" />
         </button>
         <button
           onClick={() => swiperInstance?.slideNext()}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-30 bg-[#D0865A] text-white p-3 rounded-full shadow-lg hover:opacity-90 transition flex items-center justify-center cursor-pointer"
+          className="absolute right-0 md:-right-4 top-1/2 -translate-y-1/2 z-30 bg-[#D0865A] text-white p-3 rounded-full shadow-lg hover:opacity-90 transition flex items-center justify-center cursor-pointer"
         >
           <FaArrowRight className="w-4 h-4" />
         </button>
 
-        <Swiper
-          onSwiper={(swiper) => setSwiperInstance(swiper)}
-          spaceBetween={24}
-          slidesPerView={1}
-          breakpoints={{
-            640: { slidesPerView: 1 },
-            768: { slidesPerView: 2 },
-            1024: { slidesPerView: 3 },
-          }}
-        >
-          {reviews.map((review, idx) => (
-            <SwiperSlide key={idx}>
-              <ReviewCard {...review} />
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        <div className="py-6">
+          <Swiper
+            onSwiper={(swiper) => setSwiperInstance(swiper)}
+            spaceBetween={24}
+            slidesPerView={1}
+            centeredSlides={true}
+            loop={true}
+            breakpoints={{
+              640: { slidesPerView: 1.5, centeredSlides: true },
+              768: { slidesPerView: 2, centeredSlides: true },
+              1024: { slidesPerView: 3, centeredSlides: true },
+            }}
+          >
+            {reviews.map((review, idx) => (
+              <SwiperSlide key={idx}>
+                {({ isActive }) => (
+                  <div className="h-[380px] md:h-[420px] flex items-center justify-center">
+                    <ReviewCard {...review} isActive={isActive} />
+                  </div>
+                )}
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
       </div>
     </section>
   );
