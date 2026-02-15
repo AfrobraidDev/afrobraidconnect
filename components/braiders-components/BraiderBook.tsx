@@ -124,6 +124,24 @@ export default function BraiderBook() {
     false,
   );
 
+  useEffect(() => {
+    if (step === "SUCCESS") {
+      sessionStorage.removeItem(`${storageKey}_step`);
+      sessionStorage.removeItem(`${storageKey}_vars`);
+      sessionStorage.removeItem(`${storageKey}_date`);
+      sessionStorage.removeItem(`${storageKey}_time`);
+      sessionStorage.removeItem(`${storageKey}_wallet`);
+    }
+  }, [step, storageKey]);
+
+  const clearBookingSession = () => {
+    sessionStorage.removeItem(`${storageKey}_step`);
+    sessionStorage.removeItem(`${storageKey}_vars`);
+    sessionStorage.removeItem(`${storageKey}_date`);
+    sessionStorage.removeItem(`${storageKey}_time`);
+    sessionStorage.removeItem(`${storageKey}_wallet`);
+  };
+
   const selectedDate = useMemo(() => {
     const d = new Date(selectedDateStr);
     return isNaN(d.getTime()) ? new Date() : d;
@@ -232,7 +250,6 @@ export default function BraiderBook() {
             const data = response.data;
             if (data.amount_stripe === 0) {
               setStep("SUCCESS");
-              sessionStorage.removeItem(`${storageKey}_step`);
             } else if (data.client_secret) {
               setPaymentData({
                 clientSecret: data.client_secret,
@@ -273,6 +290,7 @@ export default function BraiderBook() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 lg:pb-12">
+      {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-4">
           {step !== "SUCCESS" && (
@@ -305,6 +323,7 @@ export default function BraiderBook() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Main Content Area */}
           <div className="lg:col-span-7 xl:col-span-8">
             {step === "CUSTOMIZE" && (
               <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -473,7 +492,6 @@ export default function BraiderBook() {
                     amount={paymentData.amountStripe}
                     onSuccess={() => {
                       setStep("SUCCESS");
-                      sessionStorage.removeItem(storageKey);
                     }}
                   />
                 </Elements>
@@ -505,6 +523,7 @@ export default function BraiderBook() {
             )}
           </div>
 
+          {/* Sticky Summary Cart (Hidden on Success) */}
           {step !== "SUCCESS" && (
             <div className="lg:col-span-5 xl:col-span-4 relative">
               <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 sticky top-24">
