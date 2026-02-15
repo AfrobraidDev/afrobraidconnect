@@ -13,15 +13,16 @@ import {
   addMonths,
   subMonths,
   isBefore,
+  startOfDay,
 } from "date-fns";
 import { useSwipeable } from "react-swipeable";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CustomDatePickerProps {
   selectedDate?: Date;
-  onSelect?: (date: Date) => void;
+  onSelect?: (date: Date | undefined) => void;
   onCancel?: () => void;
-  isMobileOpen?: boolean; // mobile modal control
+  isMobileOpen?: boolean;
   setIsMobileOpen?: (open: boolean) => void;
 }
 
@@ -32,7 +33,9 @@ const CustomDatePicker = ({
   isMobileOpen = false,
   setIsMobileOpen,
 }: CustomDatePickerProps) => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(initialSelectedDate || null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(
+    initialSelectedDate || null,
+  );
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   useEffect(() => {
@@ -43,7 +46,9 @@ const CustomDatePicker = ({
   const monthEnd = endOfMonth(monthStart);
   const startDate = startOfWeek(monthStart);
   const endDate = endOfWeek(monthEnd);
+
   const today = new Date();
+  const todayStart = startOfDay(today);
 
   const handlePrevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
   const handleNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
@@ -55,7 +60,7 @@ const CustomDatePicker = ({
   };
 
   const handleDateClick = (day: Date) => {
-    if (isBefore(day, today)) return;
+    if (isBefore(day, todayStart)) return;
     setSelectedDate(day);
   };
 
@@ -73,7 +78,9 @@ const CustomDatePicker = ({
       >
         <ChevronLeft />
       </button>
-      <div className="font-semibold text-lg">{format(currentMonth, "MMMM yyyy")}</div>
+      <div className="font-semibold text-lg">
+        {format(currentMonth, "MMMM yyyy")}
+      </div>
       <button
         onClick={handleNextMonth}
         className="p-2 rounded-full bg-[#FAF3EF] text-[#D0865A] hover:opacity-90"
@@ -104,7 +111,7 @@ const CustomDatePicker = ({
     while (day <= endDate) {
       for (let i = 0; i < 7; i++) {
         const cloneDay = day;
-        const isDisabled = isBefore(cloneDay, today);
+        const isDisabled = isBefore(cloneDay, todayStart);
         const isSelected = selectedDate && isSameDay(cloneDay, selectedDate);
         const isCurrentMonth = isSameMonth(cloneDay, currentMonth);
 
@@ -118,14 +125,14 @@ const CustomDatePicker = ({
             onClick={() => !isDisabled && handleDateClick(cloneDay)}
           >
             {format(cloneDay, "d")}
-          </div>
+          </div>,
         );
         day = addDays(day, 1);
       }
       rows.push(
         <div key={day.toString()} className="grid grid-cols-7 mb-1">
           {days}
-        </div>
+        </div>,
       );
       days = [];
     }
@@ -134,12 +141,13 @@ const CustomDatePicker = ({
 
   const CalendarContent = () => (
     <div {...swipeHandlers}>
-      {/* Badges */}
       <div className="flex gap-4 mb-4 justify-center">
         <button
           onClick={() => handleBadgeClick("any")}
           className={`px-4 py-2 rounded-full font-semibold border ${
-            !selectedDate ? "bg-[#D0865A] text-white border-[#D0865A]" : "bg-[#FAF3EF] text-[#D0865A] border-[#D0865A]"
+            !selectedDate
+              ? "bg-[#D0865A] text-white border-[#D0865A]"
+              : "bg-[#FAF3EF] text-[#D0865A] border-[#D0865A]"
           }`}
         >
           Any Date
@@ -166,12 +174,10 @@ const CustomDatePicker = ({
         </button>
       </div>
 
-      {/* Calendar */}
       {renderHeader()}
       {renderDays()}
       {renderCells()}
 
-      {/* Action buttons */}
       <div className="flex justify-between mt-4 gap-4">
         <button
           onClick={() => {
@@ -184,7 +190,7 @@ const CustomDatePicker = ({
         </button>
         <button
           onClick={() => {
-            if (selectedDate) onSelect?.(selectedDate);
+            onSelect?.(selectedDate || undefined);
             if (setIsMobileOpen) setIsMobileOpen(false);
           }}
           className="flex-1 px-4 py-2 bg-[#D0865A] text-white rounded-full font-semibold hover:opacity-90 transition"
@@ -195,31 +201,28 @@ const CustomDatePicker = ({
     </div>
   );
 
-  // Detect mobile via window width
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
   return (
     <>
-      {/* Desktop / normal container */}
       {!isMobile && (
-        <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg" {...swipeHandlers}>
+        <div
+          className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg"
+          {...swipeHandlers}
+        >
           <CalendarContent />
         </div>
       )}
 
-      {/* Mobile full-screen modal */}
       {isMobile && isMobileOpen && (
-        <div className="fixed inset-0 bg-black/40 z-1000 flex items-start justify-center p-4 pt-20">
+        <div className="fixed inset-0 bg-black/40 z-[1000] flex items-start justify-center p-4 pt-20">
           <div className="w-full h-full max-w-md bg-white rounded-xl p-6 overflow-auto relative shadow-lg scale-90">
-            {/* Close button */}
             <button
               onClick={() => setIsMobileOpen?.(false)}
               className="absolute top-4 right-4 p-2 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition"
             >
               ✕
             </button>
-
-            {/* Calendar content */}
             <div className="mt-6">
               <CalendarContent />
             </div>

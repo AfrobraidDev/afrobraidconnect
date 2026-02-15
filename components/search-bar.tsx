@@ -48,7 +48,7 @@ export function SearchBar({
   );
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    initialDate ? parseISO(initialDate) : undefined,
+    initialDate ? parseISO(initialDate) : new Date(),
   );
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -74,15 +74,45 @@ export function SearchBar({
       );
     } else {
       const savedLocationStr = localStorage.getItem(LOCATION_STORAGE_KEY);
+      let hasValidCache = false;
+
       if (savedLocationStr) {
         try {
           const saved = JSON.parse(savedLocationStr);
           if (saved.locationName && saved.lat && saved.lng) {
             setSelectedLocation(saved.locationName);
             setCoordinates({ lat: saved.lat, lng: saved.lng });
+            hasValidCache = true;
           }
         } catch (e) {
           console.error("Failed to parse saved location", e);
+        }
+      }
+
+      if (!hasValidCache) {
+        const setBerlinDefault = () => {
+          setSelectedLocation("Berlin, Germany");
+          setCoordinates({ lat: 52.52, lng: 13.405 });
+        };
+
+        if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              setSelectedLocation("Current Location");
+              setCoordinates({ lat: latitude, lng: longitude });
+            },
+            (error) => {
+              console.warn(
+                "Geolocation denied or failed. Defaulting to Berlin." +
+                  error.message,
+              );
+              setBerlinDefault();
+            },
+            { timeout: 8000, maximumAge: 60000 },
+          );
+        } else {
+          setBerlinDefault();
         }
       }
     }
