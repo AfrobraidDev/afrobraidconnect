@@ -1,17 +1,34 @@
+"use client";
+
 import { useQuery } from "@tanstack/react-query";
 import { apiController } from "@/lib/apiController";
 import { useSession } from "next-auth/react";
 
+export interface Variation {
+  id: string;
+  name: string;
+  category: string;
+  price: string;
+  duration_minutes: number;
+}
+
 export interface Booking {
   id: string;
+  braider_id: string;
   braider_name: string;
+  braider_business: string;
   service_name: string;
   start_time: string;
   end_time: string;
   total_duration_minutes: number;
   total_price: string;
   status: "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED" | string;
+  timeline_status: string;
+  is_fully_paid: boolean;
+  amount_paid: number;
+  balance_due: number;
   created_at: string;
+  variations?: Variation[];
 }
 
 export interface PaginatedResponse {
@@ -19,24 +36,6 @@ export interface PaginatedResponse {
   next: string | null;
   previous: string | null;
   results: Booking[];
-}
-
-interface BookingListAPIResponse {
-  status?: string;
-  message?: string;
-  data?:
-    | {
-        status?: string;
-        message?: string;
-        data?: PaginatedResponse;
-      }
-    | PaginatedResponse;
-}
-
-interface SingleBookingAPIResponse {
-  status?: string;
-  message?: string;
-  data?: Booking;
 }
 
 export const useBookings = (page: number = 1, pageSize: number = 10) => {
@@ -48,25 +47,26 @@ export const useBookings = (page: number = 1, pageSize: number = 10) => {
       const token = session?.accessToken;
       if (!token) throw new Error("No access token found");
 
-      const res = await apiController<
-        BookingListAPIResponse | PaginatedResponse
-      >({
+      const res = await apiController<any>({
         method: "GET",
         url: `/bookings/?page=${page}&page_size=${pageSize}`,
         requiresAuth: true,
         token: token,
       });
 
-      let payload: PaginatedResponse;
+      let payload: PaginatedResponse = {
+        count: 0,
+        next: null,
+        previous: null,
+        results: [],
+      };
 
-      if ("results" in res && "count" in res) {
-        payload = res as PaginatedResponse;
-      } else if (res.data && "results" in res.data && "count" in res.data) {
-        payload = res.data as PaginatedResponse;
-      } else if (res.data && "data" in res.data && res.data.data) {
+      if (res?.data?.data?.results) {
         payload = res.data.data;
-      } else {
-        payload = { count: 0, next: null, previous: null, results: [] };
+      } else if (res?.data?.results) {
+        payload = res.data;
+      } else if (res?.results) {
+        payload = res;
       }
 
       return payload;
@@ -90,7 +90,7 @@ export const useBookingDetails = (id: string | null) => {
       const token = session?.accessToken;
       if (!id || !token) throw new Error("Missing ID or token");
 
-      const res = await apiController<SingleBookingAPIResponse | Booking>({
+      const res = await apiController<any>({
         method: "GET",
         url: `/bookings/${id}/`,
         requiresAuth: true,
@@ -99,10 +99,10 @@ export const useBookingDetails = (id: string | null) => {
 
       let payload: Booking;
 
-      if ("id" in res && "service_name" in res) {
+      if (res && res.id && res.service_name) {
         payload = res as Booking;
-      } else if (res.data && "id" in res.data) {
-        payload = res.data;
+      } else if (res?.data && res.data.id) {
+        payload = res.data as Booking;
       } else {
         throw new Error("Invalid booking data received");
       }

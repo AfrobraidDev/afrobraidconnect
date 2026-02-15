@@ -11,11 +11,19 @@ import {
   ChevronRight,
   Loader2,
   ArrowRight,
+  CheckCircle2,
+  AlertCircle,
+  Activity,
 } from "lucide-react";
 import { useBookings, useBookingDetails } from "./use-bookings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const formatPrice = (amount: string | number) => {
   return new Intl.NumberFormat("en-IE", {
@@ -142,15 +150,19 @@ export default function MyBookings() {
                 onClick={() => setSelectedBookingId(booking.id)}
               >
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
                     <Badge
                       className={`${getStatusStyles(booking.status)} shadow-none`}
                     >
                       {booking.status}
                     </Badge>
-                    <span className="text-sm font-medium text-gray-900">
-                      {formatPrice(booking.total_price)}
-                    </span>
+                    <Badge
+                      variant="outline"
+                      className="text-gray-600 bg-gray-50 border-gray-200 shadow-none font-normal flex items-center gap-1"
+                    >
+                      <Activity className="w-3 h-3" />
+                      {booking.timeline_status}
+                    </Badge>
                   </div>
 
                   <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
@@ -175,18 +187,28 @@ export default function MyBookings() {
                   </div>
                 </div>
 
-                <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 sm:border-l border-gray-100 pt-4 sm:pt-0 sm:pl-6">
-                  <div className="text-sm text-gray-500 sm:text-right">
-                    <span className="block text-xs uppercase tracking-wider mb-0.5">
+                <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 sm:border-l border-gray-100 pt-4 sm:pt-0 sm:pl-6 min-w-[140px]">
+                  <div className="text-sm text-gray-500 sm:text-right w-full">
+                    {booking.is_fully_paid ? (
+                      <div className="flex items-center sm:justify-end gap-1 text-green-600 font-medium mb-1">
+                        <CheckCircle2 className="w-4 h-4" /> Fully Paid
+                      </div>
+                    ) : (
+                      <div className="flex items-center sm:justify-end gap-1 text-orange-600 font-medium mb-1">
+                        <AlertCircle className="w-4 h-4" /> Due:{" "}
+                        {formatPrice(booking.balance_due)}
+                      </div>
+                    )}
+                    <span className="block text-xs uppercase tracking-wider mb-0.5 mt-2">
                       Braider
                     </span>
-                    <span className="font-semibold text-gray-900">
+                    <span className="font-semibold text-gray-900 block truncate">
                       {booking.braider_name}
                     </span>
                   </div>
                   <Button
                     variant="ghost"
-                    className="h-8 w-8 p-0 rounded-full group-hover:bg-[#D0865A]/10 group-hover:text-[#D0865A] transition-colors"
+                    className="h-8 w-8 p-0 rounded-full group-hover:bg-[#D0865A]/10 group-hover:text-[#D0865A] transition-colors mt-2 hidden sm:flex"
                   >
                     <ArrowRight className="w-4 h-4" />
                   </Button>
@@ -226,10 +248,15 @@ export default function MyBookings() {
         onOpenChange={(open) => !open && setSelectedBookingId(null)}
       >
         <DialogContent className="sm:max-w-md rounded-2xl p-0 overflow-hidden bg-white">
+          <DialogTitle className="sr-only">Appointment Details</DialogTitle>
+          <DialogDescription className="sr-only">
+            Detailed breakdown of your booking.
+          </DialogDescription>
+
           <div className="bg-gray-50 border-b border-gray-100 p-5 relative">
-            <DialogTitle className="text-lg font-bold text-gray-900 mb-1">
+            <h2 className="text-lg font-bold text-gray-900 mb-1">
               Appointment Details
-            </DialogTitle>
+            </h2>
             <p className="text-sm text-gray-500">
               Ref: {selectedBookingId?.split("-")[0].toUpperCase()}
             </p>
@@ -250,12 +277,23 @@ export default function MyBookings() {
                     <p className="text-gray-500">
                       with {bookingDetails.braider_name}
                     </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {bookingDetails.braider_business}
+                    </p>
                   </div>
-                  <Badge
-                    className={`${getStatusStyles(bookingDetails.status)} shadow-none`}
-                  >
-                    {bookingDetails.status}
-                  </Badge>
+                  <div className="flex flex-col items-end gap-2">
+                    <Badge
+                      className={`${getStatusStyles(bookingDetails.status)} shadow-none`}
+                    >
+                      {bookingDetails.status}
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] text-gray-500 bg-gray-50 font-normal"
+                    >
+                      {bookingDetails.timeline_status}
+                    </Badge>
+                  </div>
                 </div>
 
                 <div className="bg-gray-50 rounded-xl p-4 space-y-3 border border-gray-100">
@@ -277,20 +315,60 @@ export default function MyBookings() {
                   </div>
                 </div>
 
-                <div className="border-t border-gray-100 pt-4 space-y-2">
+                {/* Variations Breakdown */}
+                {bookingDetails.variations &&
+                  bookingDetails.variations.length > 0 && (
+                    <div className="border-t border-gray-100 pt-4 space-y-2">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-3">
+                        Add-ons & Variations
+                      </h4>
+                      {bookingDetails.variations.map((variant) => (
+                        <div
+                          key={variant.id}
+                          className="flex justify-between text-sm"
+                        >
+                          <span className="text-gray-500">{variant.name}</span>
+                          <span className="text-gray-700">
+                            +{formatPrice(variant.price)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                {/* Payment Breakdown */}
+                <div className="border-t border-gray-100 pt-4 space-y-3">
+                  <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                    Payment Summary
+                  </h4>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Duration</span>
+                    <span className="text-gray-500">Total Price</span>
                     <span className="font-medium text-gray-900">
-                      {Math.floor(bookingDetails.total_duration_minutes / 60)}h{" "}
-                      {bookingDetails.total_duration_minutes % 60}m
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-base font-bold pt-2">
-                    <span className="text-gray-900">Total Paid</span>
-                    <span className="text-gray-900">
                       {formatPrice(bookingDetails.total_price)}
                     </span>
                   </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Amount Paid (Deposit)</span>
+                    <span className="font-medium text-green-600">
+                      {formatPrice(bookingDetails.amount_paid)}
+                    </span>
+                  </div>
+
+                  {bookingDetails.balance_due > 0 ? (
+                    <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-50 mt-1">
+                      <span className="text-gray-900">Balance Due</span>
+                      <span className="text-[#D0865A]">
+                        {formatPrice(bookingDetails.balance_due)}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-50 mt-1">
+                      <span className="text-gray-900">Status</span>
+                      <span className="text-green-600 flex items-center gap-1">
+                        <CheckCircle2 className="w-4 h-4" /> Fully Paid
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {bookingDetails.status === "PENDING" && (
