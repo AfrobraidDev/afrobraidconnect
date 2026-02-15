@@ -1,14 +1,16 @@
-// lib/api/search.ts
 import { apiController } from "@/lib/apiController";
-import { SearchResponse, ServiceType } from "../types/search";
+import { SearchResponse, SkillsResponse } from "../types/search";
 
 interface SearchParams {
   lat: number;
   lng: number;
   radius?: number;
   datetime?: string;
-  service_type_id?: string;
+  skills?: string;
   searchTerm?: string;
+  rating?: number;
+  min_price?: number;
+  max_price?: number;
 }
 
 export const searchBraiders = async (params: SearchParams) => {
@@ -19,9 +21,9 @@ export const searchBraiders = async (params: SearchParams) => {
   });
 };
 
-export const getServiceTypes = async () => {
-  return apiController<{ data: ServiceType[] }>({
+export const getBraidingSkills = async () => {
+  return apiController<SkillsResponse>({
     method: "GET",
-    url: "/braiders/public/service-types/",
+    url: "/admin/braiding-skills/?page_size=100",
   });
 };

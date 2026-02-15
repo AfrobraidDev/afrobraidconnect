@@ -127,7 +127,7 @@ export default function SearchMap({
                 click: () => onMarkerClick(braider),
               }}
             />
-          ))
+          )),
         )}
       </MapContainer>
     </div>

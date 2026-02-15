@@ -24,6 +24,14 @@ export interface Skill {
   name: string;
 }
 
+export interface BraidingSkill {
+  id: string;
+  name: string;
+  description: string;
+  image_url: string | null;
+  created_at: string;
+}
+
 export interface BraiderResult {
   id: string;
   first_name: string;
@@ -49,8 +57,13 @@ export interface SearchResponse {
   };
 }
 
-export interface ServiceType {
-  id: string;
-  name: string;
-  description: string;
+export interface SkillsResponse {
+  status: string;
+  message: string;
+  data: {
+    count: number;
+    next: string | null;
+    previous: string | null;
+    results: BraidingSkill[];
+  };
 }
