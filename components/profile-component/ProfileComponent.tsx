@@ -5,7 +5,6 @@ import { useProfile } from "./use-profile";
 import { format } from "date-fns";
 import {
   User,
-  Wallet,
   Lock,
   ShieldAlert,
   Loader2,
@@ -89,7 +88,7 @@ export default function ProfilePage() {
           setOldPassword("");
           setNewPassword("");
         },
-      }
+      },
     );
   };
 
@@ -134,7 +133,7 @@ export default function ProfilePage() {
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6 space-y-8 pb-20">
       {/* 1. HEADER & WALLET */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols gap-6">
         <Card className="md:col-span-2 border-none shadow-md bg-gradient-to-br from-[#1a1a1a] to-[#2d2d2d] text-white">
           <CardContent className="p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6">
             <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-white/10 flex items-center justify-center text-3xl font-bold border-2 border-white/20 uppercase">
@@ -167,22 +166,6 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-gray-200 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500 flex items-center gap-2">
-              <Wallet className="w-4 h-4" /> Wallet Balance
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold text-[#D0865A]">
-              {formatEuro(profile.wallet_balance)}
-            </div>
-            <p className="text-xs text-gray-400 mt-2">
-              Available for bookings and services.
-            </p>
           </CardContent>
         </Card>
       </div>
